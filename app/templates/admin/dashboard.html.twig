@@ -1,0 +1,47 @@
+{% extends '@EasyAdmin/layout.html.twig' %}
+{% block main %}
+    <div class="container">
+        <h2 class="mb-4">Zones, Containers & Items</h2>
+
+        <div class="row">
+            {% for zone in zones %}
+                <div class="col-md-12">
+                    {% if zone.item is not empty or zone.container is not empty%}
+                    <div class="card mb-4">
+                        <div class="card-header bg-primary text-white">
+                            <h4>{{ zone.name }}</h4>
+                        </div>
+                        <div class="card-body">
+                            {% if zone.item is not empty %}
+                                <h5>Items:</h5>
+                                {% include 'admin/item_list.html.twig' with {'items': zone.item} %}
+                            {% endif %}
+                            <div class="row">
+                                {% if zone.container is not empty %}
+                                    <h5>Containers:</h5>
+                                    {% for container in zone.container %}
+                                        <div class="col-md-6">
+                                            <div class="card border-secondary mb-3">
+                                                <div class="card-header bg-secondary text-white">
+                                                    <h5>{{ container.code }}</h5>
+                                                </div>
+                                                <div class="card-body">
+                                                    <ul class="list-group">
+                                                        {% include 'admin/item_list.html.twig' with {'items': container.item} %}
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            {% else %}
+                <p>No zones found.</p>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock main %}
