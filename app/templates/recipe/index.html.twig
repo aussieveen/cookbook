@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Cookbook{% endblock %}
+
+{% block body %}
+    <div class="container bg-dark">
+        <h1 class="text-center text-light">Cookbook</h1>
+        <div class="row row row-cols-1 row-cols-md-3 g-4">
+        {% for recipe in recipes %}
+            <div class="col h-100">
+            <div class="card">
+                <img src="{{ asset('/uploads/images/' ~ recipe.image ) }}" class="card-img-top" alt="{{ recipe.name }}">
+                <div class="card-body bg-light">
+                    <h5 class="card-title">{{ recipe.name }}</h5>
+                    <p class="card-text">{{ recipe.description}}</p>
+                    <a href="{{ path('recipe_show', {'slug': recipe.slug}) }}" class="btn btn-primary">Show</a>
+                </div>
+                <div class="card-footer">
+                    <small class="text-muted">
+                        {% if recipe.mastered %}
+                            <i class="fa fa-check-circle mastered"></i>
+                        {% endif %}
+                        {% if recipe.mistakes | length > 0 %}
+                            {{ recipe.mistakes|length }} mistakes.
+                        {% endif %}
+                    </small>
+                </div>
+            </div>
+            </div>
+        {% else %}
+            <p>No recipes found.</p>
+        {% endfor %}
+        </div>
+    </div>
+{% endblock %}

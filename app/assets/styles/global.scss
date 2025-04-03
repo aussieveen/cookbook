@@ -1,0 +1,21 @@
+// Import Bootstrap functions and variables
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+
+// Define custom color palette
+$custom-colors: (
+    "primary": #D2B987,  // Custom Primary Color
+    "secondary": #A5C5E5,
+    "success": #CB7C73,
+    "info": #17a2b8,
+    "warning": #CB7C73,
+    "danger": #dc3545,
+    "light": #FBFAFA,
+    "dark": #23294c,
+);
+
+// Merge with Bootstrap default theme colors
+$theme-colors: map-merge($theme-colors, $custom-colors);
+
+// Import Bootstrap main styles
+@import "~bootstrap/scss/bootstrap";
