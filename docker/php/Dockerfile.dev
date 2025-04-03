@@ -23,7 +23,7 @@ RUN ln -s ${PHP_INI_DIR}/php.ini-production ${PHP_INI_DIR}/php.ini \
 COPY docker/php/conf.d/php-fpm.conf /usr/local/etc/php-fpm.d/www.conf
 
 # Copy default settings
-COPY docker/php/conf.d/inventory.ini ${PHP_INI_DIR}/conf.d/inventory.ini
+COPY docker/php/conf.d/cookbook.ini ${PHP_INI_DIR}/conf.d/cookbook.ini
 
 WORKDIR /var/www/html
 
