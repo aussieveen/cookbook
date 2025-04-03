@@ -41,3 +41,20 @@ COPY docker/docker-entrypoint.sh /usr/local/bin/docker-entrypoint
 RUN chmod +x /usr/local/bin/docker-entrypoint
 
 ENTRYPOINT ["docker-entrypoint"]
+
+FROM node:18 as npm_builder
+
+WORKDIR /app
+COPY ../../app/package*.json ./
+COPY --from=build /var/www/html/vendor ./vendor
+
+RUN npm install --production=false
+
+COPY ../../app .
+
+RUN npm run build
+
+FROM build as final
+
+WORKDIR /var/www/html
+COPY --from=npm_builder /app/public/build ./public/build

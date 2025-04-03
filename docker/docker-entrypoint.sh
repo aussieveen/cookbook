@@ -18,6 +18,5 @@ if [ "$1" = 'php-fpm' ] || [ "$1" = 'php' ] || [ "$1" = 'bin/console' ]; then
 fi
 
 service nginx start
-service cron start
 
 exec docker-php-entrypoint "$@"
