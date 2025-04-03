@@ -1,0 +1,90 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ recipe.name }}{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <!-- Recipe Name & Image -->
+        <div class="row">
+            <div class="col-md-8">
+                <h1 class="display-5 text-light">{{ recipe.name }}</h1>
+                <p class="text-light">{{ recipe.description }}</p>
+            </div>
+            <div class="col-md-4 text-center">
+                <img src="{{ asset('/uploads/images/' ~ recipe.image ) }}" class="img-fluid rounded shadow-lg border" alt="{{ recipe.name }}">
+            </div>
+        </div>
+
+        <!-- Ingredients & Method -->
+        <div class="row mt-4">
+            <!-- Ingredients -->
+            <div class="col-md-4">
+                <div class="card shadow-sm border-primary">
+                    <div class="card-header bg-primary text-light">
+                        <h5 class="mb-0">Ingredients</h5>
+                    </div>
+                    {% for component in recipe.components %}
+                        {% if component.name %}
+                        <div class="card-header">
+                            <h6 class="mb-0">{{ component.name }}</h6>
+                        </div>
+                        {% endif %}
+                        <ul class="list-group list-group-flush">
+                            {% for ingredient in component.ingredients %}
+                                <li class="list-group-item">
+                                    <span class="fw-bold">
+                                        {% if ingredient.revisedMeasurement %}
+                                            {{ ingredient.revisedMeasurement }}
+                                        {% else %}
+                                            {{ ingredient.measurement }}
+                                        {% endif %}
+                                    </span> {{ ingredient.name }}
+                                </li>
+                            {% else %}
+                                <li class="list-group-item text-muted">No ingredients listed.</li>
+                            {% endfor %}
+                        </ul>
+                    {% endfor %}
+                </div>
+            </div>
+            <!-- Method Steps -->
+            <div class="col-md-8">
+                <div class="card shadow-sm border-secondary">
+                    <div class="card-header bg-secondary text-light">
+                        <h5 class="mb-0">Method</h5>
+                    </div>
+                    <div class="card-body">
+                        {% for step in recipe.steps %}
+                            <p class="mb-2">
+                                <span class="badge bg-secondary">{{ loop.index }}:</span> {{ step.detail }}
+                            </p>
+                        {% else %}
+                            <p class="text-muted">No steps provided.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-4">
+            <!-- Mistakes & Fixes -->
+            <div class="col-md-12">
+                <div class="card shadow-sm border-warning">
+                    <div class="card-header bg-warning text-light">
+                        <h5 class="mb-0">Past Mistakes</h5>
+                    </div>
+                    <div class="card-body">
+                        {% for mistake in recipe.mistakes %}
+                            <div class="border rounded p-3 mb-2 bg-light">
+                                <strong class="text-success">Mistake:</strong> {{ mistake.description }}
+                                <br>
+                                <strong class="text-dark">Fix:</strong> {{ mistake.fix }}
+                            </div>
+                        {% else %}
+                            <p class="text-muted">No mistakes recorded yet.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

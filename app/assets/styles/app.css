@@ -1,0 +1,12 @@
+html{
+    background-color: #23294c;
+}
+
+body{
+    background-color: #23294c !important;
+    color: #fff;
+}
+
+.card img{
+    max-height: 10em; object-fit: cover;
+}
