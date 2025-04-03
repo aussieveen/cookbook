@@ -9,13 +9,13 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class RecipeType extends AbstractType
 {
+    /** @SuppressWarnings(PHPMD.UnusedFormalParameter) */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->add('Name')
             ->add('Description')
-            ->add('Photo')
-        ;
+            ->add('Photo');
     }
 
     public function configureOptions(OptionsResolver $resolver): void

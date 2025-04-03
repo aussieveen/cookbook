@@ -15,7 +15,7 @@ final class RecipeController extends AbstractController
 {
     public function __construct(
         private RecipeRepository $recipeRepository
-    ){
+    ) {
     }
 
     #[Route(name: 'home', methods: ['GET'])]

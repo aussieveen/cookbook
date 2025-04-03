@@ -12,6 +12,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 
+/** @SuppressWarnings(PHPMD.StaticAccess) */
 class RecipeCrudController extends AbstractCrudController
 {
     public static function getEntityFqcn(): string
@@ -19,6 +20,7 @@ class RecipeCrudController extends AbstractCrudController
         return Recipe::class;
     }
 
+    /** @SuppressWarnings(PHPMD.UnusedFormalParameter) */
     public function configureFields(string $pageName): iterable
     {
         return [

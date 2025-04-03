@@ -88,6 +88,7 @@ class Recipe
         return $this->slug;
     }
 
+    /** @SuppressWarnings(PHPMD.UnusedFormalParameter) */
     #[ORM\PrePersist]
     #[ORM\PreUpdate]
     public function generateSlug(LifecycleEventArgs $eventArgs): void

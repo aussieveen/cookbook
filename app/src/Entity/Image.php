@@ -40,7 +40,7 @@ class Image
     public function getVirtualFilename(): string
     {
         //Set path for easyadmin
-        return realpath(__DIR__.'/../../public/images/'.$this->filename);
+        return realpath(__DIR__ . '/../../public/images/' . $this->filename);
     }
 
     public function setVirtualFilename(string $filename)
