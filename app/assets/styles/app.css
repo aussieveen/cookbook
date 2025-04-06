@@ -10,3 +10,19 @@ body{
 .card img{
     max-height: 10em; object-fit: cover;
 }
+
+.done{
+    text-decoration: line-through;
+}
+
+.badge.bg-complete{
+    display:none;
+}
+
+.done .badge.bg-complete{
+    display:inline-block;
+}
+
+.done .badge.bg-secondary{
+    display:none;
+}
