@@ -8,7 +8,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
-use Symfony\Component\String\Slugger\SluggerInterface;
 
 #[ORM\Entity(repositoryClass: RecipeRepository::class)]
 #[ORM\HasLifecycleCallbacks]
@@ -54,7 +53,6 @@ class Recipe
 
     public function __construct()
     {
-        $this->ingredients = new ArrayCollection();
         $this->steps = new ArrayCollection();
         $this->mistakes = new ArrayCollection();
         $this->components = new ArrayCollection();
@@ -72,6 +70,7 @@ class Recipe
 
     public function setName(string $name): static
     {
+        debug_print_backtrace(0, 5);
         $this->name = $name;
 
         return $this;
@@ -117,7 +116,9 @@ class Recipe
 
     public function setImage(?string $image): static
     {
-        $this->image = $image;
+        if ($image !== null) {
+            $this->image = $image;
+        }
 
         return $this;
     }

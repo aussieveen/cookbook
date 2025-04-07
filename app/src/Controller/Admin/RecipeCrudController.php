@@ -5,16 +5,29 @@ declare(strict_types=1);
 namespace App\Controller\Admin;
 
 use App\Entity\Recipe;
+use App\Form\S3FileUploadType;
+use App\Service\ImageUploader;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /** @SuppressWarnings(PHPMD.StaticAccess) */
 class RecipeCrudController extends AbstractCrudController
 {
+    public function __construct(
+        private ImageUploader $imageUploader,
+        #[Autowire('%s3.bucket.name%')]
+        private string $s3BucketName,
+        #[Autowire('%s3.bucket.region%')]
+        private string $s3Region,
+    ) {
+    }
+
     public static function getEntityFqcn(): string
     {
         return Recipe::class;
@@ -28,9 +41,19 @@ class RecipeCrudController extends AbstractCrudController
             TextareaField::new('description'),
             ImageField::new('image')
                 ->setUploadDir('public/uploads/images')
-                ->setBasePath('uploads/images')
+                ->setBasePath(sprintf(
+                    'https://%s.s3.%s.amazonaws.com/images/',
+                    $this->s3BucketName,
+                    $this->s3Region
+                ))
                 ->setRequired(false)
-                ->setLabel('Image'),
+                ->setLabel('Image')
+                ->setFormTypeOption('upload_new', function ($uploadedFile) {
+                    if ($uploadedFile instanceof UploadedFile) {
+                        return $this->imageUploader->upload($uploadedFile);
+                    }
+                    return null;
+                }),
             BooleanField::new('mastered'),
             CollectionField::new('components')
                 ->useEntryCrudForm(ComponentCrudController::class)

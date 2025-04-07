@@ -1,0 +1,13 @@
+# Read the documentation at https://github.com/thephpleague/flysystem-bundle/blob/master/docs/1-getting-started.md
+flysystem:
+    storages:
+        default.storage:
+            adapter: 'local'
+            options:
+                directory: '%kernel.project_dir%/public/uploads/images'
+        s3.storage:
+            adapter: 'aws'
+            options:
+                client: 'aws.client'
+                bucket: '%env(AWS_S3_BUCKET)%'
+                prefix: 'images'
