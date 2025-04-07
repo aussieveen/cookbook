@@ -38,7 +38,9 @@
                                         {% else %}
                                             {{ ingredient.measurement }}
                                         {% endif %}
-                                    </span> {{ ingredient.name }}, {{ ingredient.note }}
+                                    </span> {{ ingredient.name }}
+                                    {% if ingredient.note %}, {{ ingredient.note }}{% endif %}
+
                                 </li>
                             {% else %}
                                 <li class="list-group-item text-muted">No ingredients listed.</li>
