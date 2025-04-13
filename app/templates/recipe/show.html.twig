@@ -35,6 +35,7 @@
                                     <span class="fw-bold">
                                         {% if ingredient.revisedMeasurement %}
                                             {{ ingredient.revisedMeasurement }}
+                                            <span class="text-decoration-line-through"> {{ ingredient.measurement }}</span>
                                         {% else %}
                                             {{ ingredient.measurement }}
                                         {% endif %}
