@@ -70,7 +70,6 @@ class Recipe
 
     public function setName(string $name): static
     {
-        debug_print_backtrace(0, 5);
         $this->name = $name;
 
         return $this;

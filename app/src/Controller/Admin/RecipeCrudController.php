@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Controller\Admin;
 
 use App\Entity\Recipe;
-use App\Form\S3FileUploadType;
 use App\Service\ImageUploader;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
@@ -16,7 +18,10 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
-/** @SuppressWarnings(PHPMD.StaticAccess) */
+/**
+ * @SuppressWarnings(PHPMD.StaticAccess)
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
 class RecipeCrudController extends AbstractCrudController
 {
     public function __construct(
@@ -68,5 +73,18 @@ class RecipeCrudController extends AbstractCrudController
                 ->setLabel('Mistakes')
                 ->hideOnIndex(),
         ];
+    }
+
+    public function configureActions(Actions $actions): Actions
+    {
+
+        $importAction = Action::new('import', 'Import Recipe')
+            ->linkToRoute('admin_recipe_import')
+            ->createAsGlobalAction()
+            ->setCssClass('btn btn-primary');
+
+        $actions->add(Crud::PAGE_INDEX, $importAction);
+
+        return $actions;
     }
 }

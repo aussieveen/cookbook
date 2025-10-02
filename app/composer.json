@@ -13,10 +13,13 @@
         "easycorp/easyadmin-bundle": "^4.24",
         "league/flysystem-aws-s3-v3": "^3.29",
         "league/flysystem-bundle": "^3.4",
+        "php-http/discovery": "*",
+        "psr/http-factory-implementation": "*",
         "symfony/console": "7.2.*",
         "symfony/dotenv": "7.2.*",
         "symfony/flex": "^2.4.7",
         "symfony/framework-bundle": "7.2.*",
+        "symfony/http-client": "7.2.*",
         "symfony/runtime": "7.2.*",
         "symfony/webpack-encore-bundle": "^2.2",
         "symfony/yaml": "7.2.*"
