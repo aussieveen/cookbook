@@ -16,7 +16,7 @@ class RecipeSearchToEntity
         $recipe = new Recipe();
         $recipe->setName($data['title'] ?? 'No name')
             ->setSlug($data['slug'] ?? 'no-slug')
-            ->setDescription(strip_tags($data['description'][0]['data']['value']?? 'No description'))
+            ->setDescription(strip_tags($data['description'][0]['data']['value'] ?? 'No description'))
             ->setImage($data['headlineImages']['thumbnail']['url'] ?? null);
 
         $this->addComponents($recipe, $data['recipeAttributes']['ingredients'] ?? []);
@@ -27,13 +27,13 @@ class RecipeSearchToEntity
 
     private function addComponents(Recipe $recipe, array $components): void
     {
-        foreach ($components as $component){
+        foreach ($components as $component) {
             $componentEntity = new Component();
-            if (isset($component['heading'])){
+            if (isset($component['heading'])) {
                 $componentEntity->setName($component['heading']);
             }
-            foreach ($component['ingredients'] as $ingredient){
-                if(!isset($ingredient['ingredientText'])){
+            foreach ($component['ingredients'] as $ingredient) {
+                if (!isset($ingredient['ingredientText'])) {
                     continue;
                 }
                 $ingredientEnt = new Ingredient();
@@ -55,7 +55,7 @@ class RecipeSearchToEntity
 
     private function addMethod(Recipe $recipe, mixed $steps)
     {
-        foreach( $steps as $step ){
+        foreach ($steps as $step) {
             $stepEntity = new Step();
             $stepEntity->setRecipe($recipe);
             $stepEntity->setDetail(strip_tags($step['content'][0]['data']['value']) ?? '');

@@ -15,8 +15,7 @@ class ImportRecipeController extends AbstractController
     public function __construct(
         private readonly AdminUrlGenerator $adminUrlGenerator,
         private readonly ImportRecipeFormHandler $formHandler
-    )
-    {
+    ) {
     }
 
     #[Route(path: 'admin/import', name: 'admin_recipe_import', methods: ['GET','POST'])]
@@ -44,5 +43,4 @@ class ImportRecipeController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
-
 }

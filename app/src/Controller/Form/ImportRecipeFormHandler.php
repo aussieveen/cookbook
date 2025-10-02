@@ -10,14 +10,14 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class ImportRecipeFormHandler
 {
-    private const string URL_FORMAT = 'https://search.api.immediate.co.uk/v5/search/bbcgoodfood?filter[slug.keyword][match][]=%s&views=search-document:read';
+    private const string URL_FORMAT = 'https://search.api.immediate.co.uk/v5/search/bbcgoodfood' .
+                                        '?filter[slug.keyword][match][]=%s&views=search-document:read';
 
     public function __construct(
         private readonly HttpClientInterface $client,
         private readonly RecipeSearchToEntity $recipeTransformer,
         private readonly RecipeRepository $recipeRepository,
-    ){
-
+    ) {
     }
 
     #[NoReturn]
@@ -30,7 +30,7 @@ class ImportRecipeFormHandler
 
         try {
             $recipe = $this->recipeTransformer->transform($response->toArray()['hydra:member'][0]);
-        }catch (Exception $exception){
+        } catch (Exception $exception) {
             throw new Exception('Recipe not found or invalid data structure.');
         }
 

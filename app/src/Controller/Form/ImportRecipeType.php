@@ -14,6 +14,7 @@ class ImportRecipeType extends AbstractType
     {
     }
 
+    /** @SuppressWarnings(PHPMD.UnusedFormalParameter) */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder->add('slug', TextType::class, [
