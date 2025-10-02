@@ -9,7 +9,7 @@
         {% for recipe in recipes %}
             <div class="col h-100">
             <div class="card">
-                <img src="{{ recipe.image|aws_url }}" class="card-img-top" alt="{{ recipe.name }}">
+                <img src="{{ recipe.image starts with 'https' ? recipe.image : (recipe.image|aws_url) }}" class="card-img-top" alt="{{ recipe.name }}">
                 <div class="card-body bg-light">
                     <h5 class="card-title">{{ recipe.name }}</h5>
                     <p class="card-text">{{ recipe.description}}</p>

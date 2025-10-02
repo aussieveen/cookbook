@@ -4,9 +4,13 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
+use App\Controller\Form\ImportRecipeType;
 use App\Entity\Recipe;
 use App\Form\S3FileUploadType;
 use App\Service\ImageUploader;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
@@ -68,5 +72,27 @@ class RecipeCrudController extends AbstractCrudController
                 ->setLabel('Mistakes')
                 ->hideOnIndex(),
         ];
+    }
+
+    public function configureActions(Actions $actions): Actions
+    {
+
+        $importAction = Action::new('import', 'Import Recipe')
+            ->linkToRoute('admin_recipe_import')
+            ->createAsGlobalAction()
+            ->setCssClass('btn btn-primary');
+
+        $actions->add(Crud::PAGE_INDEX, $importAction);
+
+        return $actions;
+    }
+
+    public function importRecipeForm()
+    {
+        $form = $this->createForm(ImportRecipeType::class);
+
+        return $this->render('admin/import_recipe.html.twig', [
+            'form' => $form->createView(),
+        ]);
     }
 }
