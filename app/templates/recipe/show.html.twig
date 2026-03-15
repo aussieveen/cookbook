@@ -11,7 +11,9 @@
                 <p class="text-light">{{ recipe.description }}</p>
             </div>
             <div class="col-md-4 text-center">
+                {% if recipe.image %}
                 <img src="{{ recipe.image starts with 'https' ? recipe.image : (recipe.image|aws_url) }}" class="img-fluid rounded shadow-lg border" alt="{{ recipe.name }}">
+                {% endif %}
             </div>
         </div>
 

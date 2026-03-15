@@ -14,9 +14,6 @@ class Ingredient
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $name = null;
-
-    #[ORM\Column(length: 255)]
     private ?string $measurement = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -29,6 +26,16 @@ class Ingredient
     #[ORM\JoinColumn(nullable: false)]
     private ?Component $component = null;
 
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?IngredientName $ingredientName = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?float $baseQuantity = null;
+
+    #[ORM\Column(length: 20, nullable: true)]
+    private ?string $baseUnit = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -36,14 +43,7 @@ class Ingredient
 
     public function getName(): ?string
     {
-        return $this->name;
-    }
-
-    public function setName(string $name): static
-    {
-        $this->name = $name;
-
-        return $this;
+        return $this->ingredientName?->getName();
     }
 
     public function getMeasurement(): ?string
@@ -90,6 +90,42 @@ class Ingredient
     public function setComponent(?Component $component): static
     {
         $this->component = $component;
+
+        return $this;
+    }
+
+    public function getIngredientName(): ?IngredientName
+    {
+        return $this->ingredientName;
+    }
+
+    public function setIngredientName(?IngredientName $ingredientName): static
+    {
+        $this->ingredientName = $ingredientName;
+
+        return $this;
+    }
+
+    public function getBaseQuantity(): ?float
+    {
+        return $this->baseQuantity;
+    }
+
+    public function setBaseQuantity(?float $baseQuantity): static
+    {
+        $this->baseQuantity = $baseQuantity;
+
+        return $this;
+    }
+
+    public function getBaseUnit(): ?string
+    {
+        return $this->baseUnit;
+    }
+
+    public function setBaseUnit(?string $baseUnit): static
+    {
+        $this->baseUnit = $baseUnit;
 
         return $this;
     }

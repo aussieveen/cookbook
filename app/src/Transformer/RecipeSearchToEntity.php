@@ -8,9 +8,15 @@ use App\Entity\Component;
 use App\Entity\Ingredient;
 use App\Entity\Recipe;
 use App\Entity\Step;
+use App\Repository\IngredientNameRepository;
 
 class RecipeSearchToEntity
 {
+    public function __construct(
+        private IngredientNameRepository $ingredientNameRepository
+    ) {
+    }
+
     public function transform(array $data): Recipe
     {
         $recipe = new Recipe();
@@ -37,7 +43,9 @@ class RecipeSearchToEntity
                     continue;
                 }
                 $ingredientEnt = new Ingredient();
-                $ingredientEnt->setName(ucfirst($ingredient['ingredientText']));
+                $ingredientEnt->setIngredientName(
+                    $this->ingredientNameRepository->findOrCreate(ucfirst($ingredient['ingredientText']))
+                );
                 $ingredientEnt->setMeasurement(
                     isset($ingredient['metricQuantity'], $ingredient['metricUnit']) ?
                     $ingredient['metricQuantity'] . $ingredient['metricUnit'] :
@@ -53,7 +61,7 @@ class RecipeSearchToEntity
         }
     }
 
-    private function addMethod(Recipe $recipe, mixed $steps)
+    private function addMethod(Recipe $recipe, mixed $steps): void
     {
         foreach ($steps as $step) {
             $stepEntity = new Step();

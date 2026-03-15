@@ -5,15 +5,29 @@
 {% block body %}
     <div class="container bg-dark">
         <h1 class="text-center text-light">Cookbook</h1>
+        <div class="text-end mb-3">
+            <a href="{{ path('shopping_list_index') }}" class="btn btn-outline-light">View Shopping List</a>
+        </div>
         <div class="row row row-cols-1 row-cols-md-3 g-4">
         {% for recipe in recipes %}
             <div class="col h-100">
             <div class="card">
+                {% if recipe.image %}
                 <img src="{{ recipe.image starts with 'https' ? recipe.image : (recipe.image|aws_url) }}" class="card-img-top" alt="{{ recipe.name }}">
+                {% endif %}
                 <div class="card-body bg-light">
                     <h5 class="card-title">{{ recipe.name }}</h5>
                     <p class="card-text">{{ recipe.description}}</p>
                     <a href="{{ path('recipe_show', {'slug': recipe.slug}) }}" class="btn btn-primary">Show</a>
+                    {% if recipe.id in shoppingListRecipeIds %}
+                        <form method="post" action="{{ path('shopping_list_remove', {'id': recipe.id}) }}" class="d-inline">
+                            <button type="submit" class="btn btn-danger">Remove from List</button>
+                        </form>
+                    {% else %}
+                        <form method="post" action="{{ path('shopping_list_add', {'id': recipe.id}) }}" class="d-inline">
+                            <button type="submit" class="btn btn-success">Add to Shopping List</button>
+                        </form>
+                    {% endif %}
                 </div>
                 <div class="card-footer">
                     <small class="text-muted">
