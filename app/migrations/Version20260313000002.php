@@ -16,6 +16,8 @@ final class Version20260313000002 extends AbstractMigration
 
     public function up(Schema $schema): void
     {
+        $this->addSql('INSERT INTO ingredient_name (name) SELECT DISTINCT name FROM ingredient WHERE name IS NOT NULL AND name NOT IN (SELECT name FROM ingredient_name)');
+        $this->addSql('UPDATE ingredient i JOIN ingredient_name n ON i.name = n.name SET i.ingredient_name_id = n.id WHERE i.ingredient_name_id IS NULL');
         $this->addSql('ALTER TABLE ingredient MODIFY ingredient_name_id INT NOT NULL');
         $this->addSql('ALTER TABLE ingredient DROP COLUMN name');
     }
