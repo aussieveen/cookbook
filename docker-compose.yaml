@@ -30,5 +30,21 @@ services:
         MYSQL_PASSWORD: dbpassword
       volumes:
         - db_data:/var/lib/mysql:rw
+  database_test:
+    image: mysql:latest
+    environment:
+      MYSQL_DATABASE: cookbook_test
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: dbuser
+      MYSQL_PASSWORD: dbpassword
+    volumes:
+      - db_data_test:/var/lib/mysql:rw
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
 volumes:
   db_data: {}
+  db_data_test: {}

@@ -50,20 +50,48 @@ class UnitConverterService
             return ['quantity' => null, 'unit' => null];
         }
 
-        $wholeOrDecimal = ($matches[1] ?? '') !== '' ? (float)$matches[1] : null;
-        $numerator      = ($matches[2] ?? '') !== '' ? (int)$matches[2] : null;
-        $denominator    = ($matches[3] ?? '') !== '' ? (int)$matches[3] : null;
-        $unit           = ($matches[4] ?? '') !== '' ? $matches[4] : null;
+        return $this->resolveQuantityAndUnit($matches);
+    }
 
-        if ($wholeOrDecimal === null && $numerator === null) {
+    /**
+     * @param string[] $matches
+     * @return array{quantity: ?float, unit: ?string}
+     */
+    private function resolveQuantityAndUnit(array $matches): array
+    {
+        $parsed = $this->parseMatches($matches);
+
+        if ($parsed['whole'] === null && $parsed['numerator'] === null) {
             return ['quantity' => null, 'unit' => null];
         }
 
-        $quantity = $wholeOrDecimal ?? 0.0;
-        if ($numerator !== null && $denominator !== null && $denominator !== 0) {
-            $quantity += $numerator / $denominator;
+        $quantity = $parsed['whole'] ?? 0.0;
+        if ($parsed['numerator'] !== null && $parsed['denominator'] !== null && $parsed['denominator'] !== 0) {
+            $quantity += $parsed['numerator'] / $parsed['denominator'];
         }
 
+        return $this->applyUnitConversion($quantity, $parsed['unit']);
+    }
+
+    /**
+     * @param string[] $matches
+     * @return array{whole: ?float, numerator: ?int, denominator: ?int, unit: ?string}
+     */
+    private function parseMatches(array $matches): array
+    {
+        return [
+            'whole'       => ($matches[1] ?? '') !== '' ? (float)$matches[1] : null,
+            'numerator'   => ($matches[2] ?? '') !== '' ? (int)$matches[2] : null,
+            'denominator' => ($matches[3] ?? '') !== '' ? (int)$matches[3] : null,
+            'unit'        => ($matches[4] ?? '') !== '' ? $matches[4] : null,
+        ];
+    }
+
+    /**
+     * @return array{quantity: ?float, unit: ?string}
+     */
+    private function applyUnitConversion(float $quantity, ?string $unit): array
+    {
         if ($unit === null) {
             return ['quantity' => $quantity, 'unit' => null];
         }

@@ -36,6 +36,7 @@ class BackfillBaseUnitsCommand extends Command
 
         do {
             $ingredients = $this->ingredientRepository->findBy([], null, $batchSize, $offset);
+            $fetched = count($ingredients);
             foreach ($ingredients as $ingredient) {
                 $measurement = $ingredient->getRevisedMeasurement() ?? $ingredient->getMeasurement();
                 if ($measurement !== null) {
@@ -49,7 +50,7 @@ class BackfillBaseUnitsCommand extends Command
             $this->entityManager->flush();
             $this->entityManager->clear();
             $offset += $batchSize;
-        } while (count($ingredients) === $batchSize);
+        } while ($fetched === $batchSize);
 
         $io->success(sprintf('Backfilled %d ingredients.', $total));
 

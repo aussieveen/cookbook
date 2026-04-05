@@ -44,9 +44,9 @@ class ShoppingListService
                     $baseQuantity = $ingredient->getBaseQuantity();
                     if ($baseQuantity === null) {
                         $groups[$nameId]['unmeasurable'] = true;
-                    } else {
-                        $groups[$nameId]['totalQuantity'] += $baseQuantity;
+                        continue;
                     }
+                    $groups[$nameId]['totalQuantity'] += $baseQuantity;
                 }
             }
         }
