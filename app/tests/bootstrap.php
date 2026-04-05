@@ -14,6 +14,19 @@ if (file_exists(dirname(__DIR__) . '/config/bootstrap.php')) {
     (new Dotenv())->bootEnv(dirname(__DIR__) . '/.env');
 }
 
+// Create stub webpack assets if absent — required for Twig rendering in tests
+$buildDir = dirname(__DIR__) . '/public/build';
+if (!file_exists($buildDir . '/entrypoints.json')) {
+    @mkdir($buildDir, 0777, true);
+    file_put_contents($buildDir . '/entrypoints.json', json_encode([
+        'entrypoints' => [
+            'app'   => ['js' => [], 'css' => []],
+            'admin' => ['js' => [], 'css' => []],
+        ],
+    ]));
+    file_put_contents($buildDir . '/manifest.json', '{}');
+}
+
 $kernel = new Kernel('test', true);
 $kernel->boot();
 
