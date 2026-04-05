@@ -5,6 +5,7 @@ namespace App\Controller\Form;
 use App\Repository\RecipeRepository;
 use App\Transformer\RecipeSearchToEntity;
 use Exception;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class ImportRecipeFormHandler
@@ -13,6 +14,7 @@ class ImportRecipeFormHandler
         private readonly HttpClientInterface $client,
         private readonly RecipeSearchToEntity $recipeTransformer,
         private readonly RecipeRepository $recipeRepository,
+        #[Autowire(param: 'app.goodfood_api_url_format')]
         private readonly string $apiUrlFormat,
     ) {
     }
