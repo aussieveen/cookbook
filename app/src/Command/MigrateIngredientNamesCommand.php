@@ -40,12 +40,11 @@ class MigrateIngredientNamesCommand extends Command
                 [$name]
             );
 
-            if ($existing !== false) {
-                $id = $existing['id'];
-            } else {
+            if ($existing === false) {
                 $conn->executeStatement('INSERT INTO ingredient_name (name) VALUES (?)', [$name]);
-                $id = $conn->lastInsertId();
+                $existing = ['id' => $conn->lastInsertId()];
             }
+            $id = $existing['id'];
 
             $conn->executeStatement(
                 'UPDATE ingredient SET ingredient_name_id = ? WHERE LOWER(name) = LOWER(?)',

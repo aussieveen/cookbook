@@ -8,26 +8,19 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    env:
-      APP_ENV: test
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.3'
-          extensions: mbstring, zip, mongodb, xdebug
-          coverage: pcov
-          ini-values: opcache.enable=1
+      - name: Build app image
+        run: docker compose build app
 
-      - name: Install dependencies
-        run: |
-          cd app
-          composer install --prefer-dist --no-progress --no-suggest
+      - name: Start and wait for test database
+        run: docker compose up -d --wait database_test
 
       - name: Run tests
         run: |
-          cd app
-          composer run-tests
+          docker compose run --rm --no-deps \
+            --entrypoint "" \
+            -e APP_ENV=test \
+            app sh -c "composer install --prefer-dist --no-progress --no-interaction && composer run-tests"

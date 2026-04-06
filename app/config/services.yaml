@@ -6,6 +6,7 @@
 parameters:
     s3.bucket.name: "%env(AWS_S3_BUCKET)%"
     s3.bucket.region: "%env(AWS_S3_REGION)%"
+    app.goodfood_api_url_format: "%env(GOODFOOD_API_URL_FORMAT)%"
 
 services:
     # default configuration for services in *this* file
