@@ -49,4 +49,9 @@ class Step
 
         return $this;
     }
+
+    public function __toString(): string
+    {
+        return mb_substr($this->detail ?? '', 0, 50);
+    }
 }

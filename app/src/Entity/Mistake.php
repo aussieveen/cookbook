@@ -64,4 +64,9 @@ class Mistake
 
         return $this;
     }
+
+    public function __toString(): string
+    {
+        return mb_substr($this->description ?? '', 0, 50);
+    }
 }
