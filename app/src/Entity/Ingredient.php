@@ -129,4 +129,9 @@ class Ingredient
 
         return $this;
     }
+
+    public function __toString(): string
+    {
+        return trim(($this->ingredientName?->getName() ?? '') . ' ' . ($this->measurement ?? ''));
+    }
 }
