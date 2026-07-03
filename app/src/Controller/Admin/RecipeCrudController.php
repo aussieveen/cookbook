@@ -6,6 +6,7 @@ namespace App\Controller\Admin;
 
 use App\Entity\Recipe;
 use App\Enum\Course;
+use App\Enum\MealOccasion;
 use App\Service\ImageUploader;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
@@ -70,6 +71,14 @@ class RecipeCrudController extends AbstractCrudController
                 ))
                 ->allowMultipleChoices(false)
                 ->renderExpanded(false),
+            ChoiceField::new('mealOccasions', 'Meal Occasions')
+                ->setChoices(array_combine(
+                    array_map(fn(MealOccasion $o) => $o->label(), MealOccasion::cases()),
+                    MealOccasion::cases()
+                ))
+                ->allowMultipleChoices()
+                ->renderExpanded(false)
+                ->hideOnIndex(),
             AssociationField::new('pairsWith', 'Pairs With')
                 ->autocomplete()
                 ->hideOnIndex(),

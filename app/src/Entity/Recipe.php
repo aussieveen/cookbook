@@ -3,12 +3,14 @@
 namespace App\Entity;
 
 use App\Enum\Course;
+use App\Enum\MealOccasion;
 use App\Repository\RecipeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: RecipeRepository::class)]
 #[ORM\HasLifecycleCallbacks]
@@ -17,24 +19,30 @@ class Recipe
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['recipe:summary', 'recipe:detail'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255, unique: true)]
+    #[Groups(['recipe:summary', 'recipe:detail'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255, unique: true)]
+    #[Groups(['recipe:summary', 'recipe:detail'])]
     private ?string $slug = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(['recipe:detail'])]
     private ?string $description = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['recipe:detail'])]
     private ?string $image = null;
 
     /**
      * @var Collection<int, Step>
      */
     #[ORM\OneToMany(targetEntity: Step::class, mappedBy: 'recipe', cascade: ['persist'], orphanRemoval: true)]
+    #[Groups(['recipe:detail'])]
     private Collection $steps;
 
     /**
@@ -44,25 +52,35 @@ class Recipe
     private Collection $mistakes;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['recipe:summary', 'recipe:detail'])]
     private ?bool $mastered = null;
 
     #[ORM\Column(length: 20, nullable: true, enumType: Course::class)]
+    #[Groups(['recipe:summary', 'recipe:detail'])]
     private ?Course $course = null;
+
+    /** @var string[] */
+    #[ORM\Column(type: Types::JSON, nullable: true)]
+    #[Groups(['recipe:summary', 'recipe:detail'])]
+    private array $mealOccasions = [];
 
     /**
      * @var Collection<int, Component>
      */
     #[ORM\OneToMany(targetEntity: Component::class, mappedBy: 'recipe', cascade: ['persist'], orphanRemoval: true)]
+    #[Groups(['recipe:detail'])]
     private Collection $components;
 
     /**
      * @var Collection<int, Recipe>
      */
     #[ORM\ManyToMany(targetEntity: Recipe::class, inversedBy: 'pairedBy')]
-    #[ORM\JoinTable(name: 'recipe_pairing',
+    #[ORM\JoinTable(
+        name: 'recipe_pairing',
         joinColumns: [new ORM\JoinColumn(name: 'recipe_id', referencedColumnName: 'id')],
         inverseJoinColumns: [new ORM\JoinColumn(name: 'paired_recipe_id', referencedColumnName: 'id')]
     )]
+    #[Groups(['recipe:detail'])]
     private Collection $pairsWith;
 
     /**
@@ -263,6 +281,21 @@ class Recipe
         return $this;
     }
 
+    /** @return MealOccasion[] */
+    /** @SuppressWarnings(PHPMD.StaticAccess) ponytail: BackedEnum::from() has no non-static equivalent */
+    public function getMealOccasions(): array
+    {
+        return array_map(MealOccasion::from(...), $this->mealOccasions);
+    }
+
+    /** @param MealOccasion[] $mealOccasions */
+    public function setMealOccasions(array $mealOccasions): static
+    {
+        $this->mealOccasions = array_map(fn(MealOccasion $o) => $o->value, $mealOccasions);
+
+        return $this;
+    }
+
     /** @return Collection<int, Recipe> */
     public function getPairsWith(): Collection
     {
@@ -294,11 +327,11 @@ class Recipe
     /** @return Collection<int, Recipe> All pairings regardless of which side initiated */
     public function getAllPairings(): Collection
     {
-        $all = array_unique(
-            array_merge($this->pairsWith->toArray(), $this->pairedBy->toArray()),
-            SORT_REGULAR
-        );
+        $unique = [];
+        foreach (array_merge($this->pairsWith->toArray(), $this->pairedBy->toArray()) as $r) {
+            $unique[spl_object_id($r)] = $r;
+        }
 
-        return new ArrayCollection(array_values($all));
+        return new ArrayCollection(array_values($unique));
     }
 }

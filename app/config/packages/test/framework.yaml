@@ -1,0 +1,4 @@
+framework:
+    exceptions:
+        Symfony\Component\HttpKernel\Exception\NotFoundHttpException:
+            log_level: 'debug'

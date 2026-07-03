@@ -17,15 +17,6 @@ enum Course: string
 
     public function label(): string
     {
-        return match($this) {
-            Course::BREAKFAST => 'Breakfast',
-            Course::STARTER => 'Starter',
-            Course::MAIN => 'Main',
-            Course::SIDE => 'Side',
-            Course::SALAD => 'Salad',
-            Course::SOUP => 'Soup',
-            Course::DESSERT => 'Dessert',
-            Course::SNACK => 'Snack',
-        };
+        return ucfirst($this->value);
     }
 }
