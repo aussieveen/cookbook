@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enum\Course;
 use App\Repository\RecipeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -45,22 +46,48 @@ class Recipe
     #[ORM\Column(nullable: true)]
     private ?bool $mastered = null;
 
+    #[ORM\Column(length: 20, nullable: true, enumType: Course::class)]
+    private ?Course $course = null;
+
     /**
      * @var Collection<int, Component>
      */
     #[ORM\OneToMany(targetEntity: Component::class, mappedBy: 'recipe', cascade: ['persist'], orphanRemoval: true)]
     private Collection $components;
 
+    /**
+     * @var Collection<int, Recipe>
+     */
+    #[ORM\ManyToMany(targetEntity: Recipe::class, inversedBy: 'pairedBy')]
+    #[ORM\JoinTable(name: 'recipe_pairing',
+        joinColumns: [new ORM\JoinColumn(name: 'recipe_id', referencedColumnName: 'id')],
+        inverseJoinColumns: [new ORM\JoinColumn(name: 'paired_recipe_id', referencedColumnName: 'id')]
+    )]
+    private Collection $pairsWith;
+
+    /**
+     * @var Collection<int, Recipe>
+     */
+    #[ORM\ManyToMany(targetEntity: Recipe::class, mappedBy: 'pairsWith')]
+    private Collection $pairedBy;
+
     public function __construct()
     {
         $this->steps = new ArrayCollection();
         $this->mistakes = new ArrayCollection();
         $this->components = new ArrayCollection();
+        $this->pairsWith = new ArrayCollection();
+        $this->pairedBy = new ArrayCollection();
     }
 
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function __toString(): string
+    {
+        return $this->name ?? '';
     }
 
     public function getName(): ?string
@@ -222,5 +249,56 @@ class Recipe
         }
 
         return $this;
+    }
+
+    public function getCourse(): ?Course
+    {
+        return $this->course;
+    }
+
+    public function setCourse(?Course $course): static
+    {
+        $this->course = $course;
+
+        return $this;
+    }
+
+    /** @return Collection<int, Recipe> */
+    public function getPairsWith(): Collection
+    {
+        return $this->pairsWith;
+    }
+
+    public function addPairsWith(Recipe $recipe): static
+    {
+        if (!$this->pairsWith->contains($recipe)) {
+            $this->pairsWith->add($recipe);
+        }
+
+        return $this;
+    }
+
+    public function removePairsWith(Recipe $recipe): static
+    {
+        $this->pairsWith->removeElement($recipe);
+
+        return $this;
+    }
+
+    /** @return Collection<int, Recipe> */
+    public function getPairedBy(): Collection
+    {
+        return $this->pairedBy;
+    }
+
+    /** @return Collection<int, Recipe> All pairings regardless of which side initiated */
+    public function getAllPairings(): Collection
+    {
+        $all = array_unique(
+            array_merge($this->pairsWith->toArray(), $this->pairedBy->toArray()),
+            SORT_REGULAR
+        );
+
+        return new ArrayCollection(array_values($all));
     }
 }

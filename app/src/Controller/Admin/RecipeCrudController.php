@@ -5,12 +5,15 @@ declare(strict_types=1);
 namespace App\Controller\Admin;
 
 use App\Entity\Recipe;
+use App\Enum\Course;
 use App\Service\ImageUploader;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
@@ -60,6 +63,16 @@ class RecipeCrudController extends AbstractCrudController
                     return null;
                 }),
             BooleanField::new('mastered'),
+            ChoiceField::new('course')
+                ->setChoices(array_combine(
+                    array_map(fn(Course $c) => $c->label(), Course::cases()),
+                    Course::cases()
+                ))
+                ->allowMultipleChoices(false)
+                ->renderExpanded(false),
+            AssociationField::new('pairsWith', 'Pairs With')
+                ->autocomplete()
+                ->hideOnIndex(),
             CollectionField::new('components')
                 ->useEntryCrudForm(ComponentCrudController::class)
                 ->setLabel('Components')
