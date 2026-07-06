@@ -6,6 +6,7 @@ use App\Repository\ComponentRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: ComponentRepository::class)]
 class Component
@@ -16,12 +17,14 @@ class Component
     private ?int $id = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['recipe:detail'])]
     private ?string $name = null;
 
     /**
      * @var Collection<int, Ingredient>
      */
     #[ORM\OneToMany(targetEntity: Ingredient::class, mappedBy: 'component', cascade: ['persist'], orphanRemoval: true)]
+    #[Groups(['recipe:detail'])]
     private Collection $ingredients;
 
     #[ORM\ManyToOne(inversedBy: 'components')]
