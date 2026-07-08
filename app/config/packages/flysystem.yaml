@@ -11,3 +11,7 @@ flysystem:
                 client: 'aws.client'
                 bucket: '%env(default:s3.fallback.bucket:AWS_S3_BUCKET)%'
                 prefix: 'images'
+        active.storage:
+            adapter: 'lazy'
+            options:
+                source: '%env(default:app.fallback.storage:STORAGE_ADAPTER)%'
