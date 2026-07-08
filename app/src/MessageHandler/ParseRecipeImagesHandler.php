@@ -11,7 +11,6 @@ use App\Entity\Step;
 use App\Message\ParseRecipeImagesMessage;
 use App\Repository\IngredientNameRepository;
 use App\Service\AiRecipeParser;
-use App\Service\StorageUrlResolver;
 use Doctrine\ORM\EntityManagerInterface;
 use League\Flysystem\FilesystemOperator;
 use Psr\Log\LoggerInterface;
@@ -25,16 +24,14 @@ class ParseRecipeImagesHandler
         private readonly AiRecipeParser $parser,
         private readonly EntityManagerInterface $entityManager,
         private readonly IngredientNameRepository $ingredientNameRepository,
-        private readonly FilesystemOperator $s3Storage,
-        private readonly FilesystemOperator $defaultStorage,
-        private readonly StorageUrlResolver $resolver,
+        private readonly FilesystemOperator $activeStorage,
         private readonly LoggerInterface $logger,
     ) {
     }
 
     public function __invoke(ParseRecipeImagesMessage $message): void
     {
-        $storage = $this->resolver->isS3() ? $this->s3Storage : $this->defaultStorage;
+        $storage = $this->activeStorage;
 
         $rawImages = [];
         $base64Images = [];

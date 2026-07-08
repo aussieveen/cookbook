@@ -10,9 +10,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 class ImageUploader
 {
     public function __construct(
-        private readonly FilesystemOperator $s3Storage,
-        private readonly FilesystemOperator $defaultStorage,
-        private readonly StorageUrlResolver $resolver,
+        private readonly FilesystemOperator $activeStorage,
     ) {
     }
 
@@ -21,13 +19,8 @@ class ImageUploader
         $key = $file->getClientOriginalName();
         $stream = fopen($file->getPathname(), 'r+');
 
-        $this->storage()->writeStream($key, $stream);
+        $this->activeStorage->writeStream($key, $stream);
 
         return $key;
-    }
-
-    private function storage(): FilesystemOperator
-    {
-        return $this->resolver->isS3() ? $this->s3Storage : $this->defaultStorage;
     }
 }

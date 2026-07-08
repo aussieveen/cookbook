@@ -54,10 +54,11 @@ Copy `.env.example` to `.env` and fill in the values:
 | `DATABASE_URL` | Yes | MySQL connection string |
 | `ANTHROPIC_API_KEY` | Yes* | API key for Claude — required if using AI image parsing |
 | `MESSENGER_TRANSPORT_DSN` | Yes | Defaults to `doctrine://default?auto_setup=1` (queue stored in DB) |
-| `AWS_S3_KEY` | No | AWS access key ID — omit to store images on local disk |
+| `STORAGE_ADAPTER` | No | `s3.storage` to use S3, `default.storage` for local disk. Defaults to `default.storage` |
+| `AWS_S3_KEY` | No | AWS access key ID — required when `STORAGE_ADAPTER=s3.storage` |
 | `AWS_S3_SECRET` | No | AWS secret access key |
 | `AWS_S3_REGION` | No | S3 bucket region (e.g. `eu-west-2`) |
-| `AWS_S3_BUCKET` | No | S3 bucket name — leave empty to use local storage |
+| `AWS_S3_BUCKET` | No | S3 bucket name |
 | `GOODFOOD_API_URL_FORMAT` | No | URL template for BBC Good Food recipe API |
 
 \* AI parsing will fail at runtime if omitted, but the rest of the app works without it.
@@ -74,6 +75,7 @@ Two containers are needed, both from the same image:
 - Image: `ghcr.io/aussieveen/cookbook:TAG`
 - Port: `80` (map to your host port)
 - `CONTAINER_ROLE=app` (or omit — defaults to app)
+- `STORAGE_ADAPTER=s3.storage` (or omit to use local disk)
 - All env vars from the table above
 - Restart policy: `unless-stopped`
 
@@ -83,6 +85,7 @@ Two containers are needed, both from the same image:
 - Command override: `php bin/console messenger:consume async failed --time-limit=3600 --failure-limit=5 --memory-limit=256M`
 - All env vars from the table above (same values as app container) with the addition of
 - `CONTAINER_ROLE=worker`
+- `STORAGE_ADAPTER=s3.storage` (must match app container)
 - Restart policy: `unless-stopped`
 
 The worker exits cleanly after one hour (`--time-limit=3600`) to release memory and stale connections. The Docker restart policy relaunches it immediately — no cron or external supervisor needed.
