@@ -43,7 +43,14 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkTo(RecipeCrudController::class, 'Recipe', 'fas fa-rectangle-list');
 
         if ($pendingCount > 0) {
-            yield MenuItem::linkTo(RecipeCrudController::class, sprintf('Pending Approval (%d)', $pendingCount), 'fas fa-clock')
+            yield MenuItem::linkTo(
+                RecipeCrudController::class,
+                sprintf(
+                    'Pending Approval (%d)',
+                    $pendingCount
+                ),
+                'fas fa-clock'
+            )
                 ->setQueryParameter('filters[needsApproval][comparison]', '=')
                 ->setQueryParameter('filters[needsApproval][value]', '1');
         }

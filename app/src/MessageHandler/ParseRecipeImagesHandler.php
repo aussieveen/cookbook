@@ -59,23 +59,7 @@ class ParseRecipeImagesHandler
         $recipe->setDescription($data['description'] ?? null);
         $recipe->setNeedsApproval(true);
 
-        // Set main image from photo_index; crop if bounding box provided
-        $photoIndex = $data['photo_index'] ?? $message->photoIndex;
-        if ($photoIndex !== null) {
-            $zeroIndex = $photoIndex - 1;
-            if (isset($message->imageS3Keys[$zeroIndex])) {
-                $imageKey = $message->imageS3Keys[$zeroIndex];
-
-                $photoCrop = $data['photo_crop'] ?? null;
-                if ($photoCrop !== null) {
-                    $cropped = $this->parser->cropImage($rawImages[$zeroIndex], $photoCrop);
-                    $imageKey = 'cropped-' . $imageKey;
-                    $storage->write($imageKey, $cropped);
-                }
-
-                $recipe->setImage($imageKey);
-            }
-        }
+        $this->setMainImage($recipe, $data, $rawImages, $message, $storage);
 
         foreach ($data['components'] as $componentData) {
             $component = new Component();
@@ -107,5 +91,31 @@ class ParseRecipeImagesHandler
         $this->entityManager->flush();
 
         $this->logger->info('AI recipe created, awaiting approval', ['recipe' => $recipe->getName()]);
+    }
+
+    private function setMainImage(
+        Recipe $recipe,
+        array $data,
+        array $rawImages,
+        ParseRecipeImagesMessage $message,
+        FilesystemOperator $storage
+    ): void {
+        // Set main image from photo_index; crop if bounding box provided
+        $photoIndex = $data['photo_index'] ?? $message->photoIndex;
+        if ($photoIndex !== null) {
+            $zeroIndex = $photoIndex - 1;
+            if (isset($message->imageS3Keys[$zeroIndex])) {
+                $imageKey = $message->imageS3Keys[$zeroIndex];
+
+                $photoCrop = $data['photo_crop'] ?? null;
+                if ($photoCrop !== null) {
+                    $cropped = $this->parser->cropImage($rawImages[$zeroIndex], $photoCrop);
+                    $imageKey = 'cropped-' . $imageKey;
+                    $storage->write($imageKey, $cropped);
+                }
+
+                $recipe->setImage($imageKey);
+            }
+        }
     }
 }

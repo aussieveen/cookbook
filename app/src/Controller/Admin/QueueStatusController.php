@@ -21,7 +21,8 @@ class QueueStatusController extends AbstractController
     public function index(): Response
     {
         $rows = $this->connection->fetchAllAssociative(
-            'SELECT id, queue_name, body, created_at, available_at, delivered_at FROM messenger_messages ORDER BY created_at DESC'
+            'SELECT id, queue_name, body, created_at, available_at, delivered_at'
+            . ' FROM messenger_messages ORDER BY created_at DESC'
         );
 
         $messages = array_map(fn(array $row) => [
@@ -41,7 +42,8 @@ class QueueStatusController extends AbstractController
     public function retry(int $id): RedirectResponse
     {
         $this->connection->executeStatement(
-            "UPDATE messenger_messages SET queue_name = 'default', delivered_at = NULL, available_at = NOW() WHERE id = ? AND queue_name = 'failed'",
+            "UPDATE messenger_messages SET queue_name = 'default', delivered_at = NULL, available_at = NOW()"
+            . " WHERE id = ? AND queue_name = 'failed'",
             [$id]
         );
 

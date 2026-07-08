@@ -6,6 +6,9 @@
 parameters:
     s3.bucket.name: "%env(default::AWS_S3_BUCKET)%"
     s3.bucket.region: "%env(default::AWS_S3_REGION)%"
+    # ponytail: fallbacks so AWS SDK and Flysystem construct without error when S3 is unconfigured; isS3() prevents actual use
+    s3.fallback.region: 'us-east-1'
+    s3.fallback.bucket: 'unconfigured'
     app.goodfood_api_url_format: "%env(GOODFOOD_API_URL_FORMAT)%"
 
 services:
@@ -21,9 +24,10 @@ services:
 
     aws.client:
         class: Aws\S3\S3Client
+        lazy: true
         arguments:
             -   version: 'latest'
-                region: '%env(default::AWS_S3_REGION)%'
+                region: '%env(default:s3.fallback.region:AWS_S3_REGION)%'
                 credentials:
                     key: '%env(default::AWS_S3_KEY)%'
                     secret: '%env(default::AWS_S3_SECRET)%'

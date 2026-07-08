@@ -25,7 +25,8 @@ class ParseRecipeImagesType extends AbstractType
                 new All([
                     new File([
                         'maxSize' => '8M',
-                        'maxSizeMessage' => 'This image is too large ({{ size }} {{ suffix }}). Please resize it to under {{ limit }} {{ suffix }} before uploading.',
+                        'maxSizeMessage' => 'This image is too large ({{ size }} {{ suffix }}). '
+                            . 'Please resize it to under {{ limit }} {{ suffix }} before uploading.',
                         'mimeTypes' => ['image/jpeg', 'image/png', 'image/webp', 'image/gif'],
                         'mimeTypesMessage' => 'Please upload a valid image (JPEG, PNG, WEBP, GIF)',
                     ]),

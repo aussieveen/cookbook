@@ -40,7 +40,10 @@ class ParseRecipeImagesController extends AbstractController
 
             $this->bus->dispatch(new ParseRecipeImagesMessage($s3Keys));
 
-            $this->addFlash('success', 'Images submitted for parsing. The recipe will appear under "Pending Approval" when ready.');
+            $this->addFlash(
+                'success',
+                'Images submitted for parsing. The recipe will appear under "Pending Approval" when ready.'
+            );
 
             return $this->redirect(
                 $this->adminUrlGenerator

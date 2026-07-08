@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use RuntimeException;
+use Runtimexception;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Throwable;
 
 class AiRecipeParser
 {
@@ -26,7 +29,19 @@ class AiRecipeParser
      * Parse recipe images via Claude vision.
      *
      * @param string[] $base64Images Base64-encoded image data (JPEG/PNG)
-     * @return array{name: string, description: string, components: list<array{name: ?string, ingredients: list<array{name: string, measurement: string}>}>, steps: list<string>, photo_index: int|null, photo_crop: array{x_pct: float, y_pct: float, width_pct: float, height_pct: float}|null}
+     * @return array{
+     *     name: string,
+     *     description: string,
+     *     components: list<array{
+     *         name: ?string,
+     *         ingredients: list<array{
+     *             name: string,
+     *             measurement: string
+     *         }>
+     *     }>,
+     *     steps: list<string>,
+     *     photo_index: int|null,
+     *     photo_crop: array{x_pct: float, y_pct: float, width_pct: float, height_pct: float}|null}
      */
     public function parse(array $base64Images): array
     {
@@ -45,7 +60,11 @@ class AiRecipeParser
             ],
         ]);
 
-        try { $body = $response->toArray(); } catch (\Throwable $e) { throw new \RuntimeException("Anthropic error: " . $response->getContent(false)); }
+        try {
+            $body = $response->toArray();
+        } catch (Throwable $e) {
+            throw new RuntimeException("Anthropic error: " . $response->getContent(false));
+        }
         $text = $body['content'][0]['text'] ?? '';
 
         return $this->extractJson($text);
@@ -61,7 +80,7 @@ class AiRecipeParser
         // Resize first to avoid OOM on large originals
         $rawJpeg = $this->resizeForApi($rawJpeg);
 
-        $src = @imagecreatefromstring($rawJpeg);
+        $src = imagecreatefromstring($rawJpeg);
         if ($src === false) {
             return $rawJpeg;
         }
@@ -112,7 +131,7 @@ class AiRecipeParser
 
         return $content;
     }
-
+    // phpcs:disable
     private function systemPrompt(int $imageCount): string
     {
         return <<<PROMPT
@@ -143,6 +162,7 @@ Return this exact structure:
 }
 PROMPT;
     }
+    // phpcs:disable
 
     /**
      * Resize image to fit Claude API limits (~3MB raw / 2048px max side).
@@ -151,7 +171,7 @@ PROMPT;
      */
     private function resizeForApi(string $rawImageData): string
     {
-        $src = @imagecreatefromstring($rawImageData);
+        $src = imagecreatefromstring($rawImageData);
         if ($src === false) {
             return $rawImageData;
         }
@@ -191,7 +211,7 @@ PROMPT;
         $data = json_decode(trim($text), true);
 
         if (!is_array($data) || !isset($data['name'], $data['steps'], $data['components'])) {
-            throw new \RuntimeException('Claude returned unexpected JSON structure: ' . $text);
+            throw new RuntimeException('Claude returned unexpected JSON structure: ' . $text);
         }
 
         return $data;

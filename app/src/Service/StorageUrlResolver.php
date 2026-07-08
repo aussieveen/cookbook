@@ -10,15 +10,15 @@ class StorageUrlResolver
 {
     public function __construct(
         #[Autowire('%s3.bucket.name%')]
-        private readonly string $bucket,
+        private readonly ?string $bucket,
         #[Autowire('%s3.bucket.region%')]
-        private readonly string $region,
+        private readonly ?string $region,
     ) {
     }
 
     public function isS3(): bool
     {
-        return $this->bucket !== '';
+        return !empty($this->bucket);
     }
 
     public function getPublicUrl(string $key): string
