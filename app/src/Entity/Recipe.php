@@ -89,6 +89,9 @@ class Recipe
     #[ORM\ManyToMany(targetEntity: Recipe::class, mappedBy: 'pairsWith')]
     private Collection $pairedBy;
 
+    #[ORM\Column(nullable: true)]
+    private ?bool $needsApproval = null;
+
     public function __construct()
     {
         $this->steps = new ArrayCollection();
@@ -333,5 +336,17 @@ class Recipe
         }
 
         return new ArrayCollection(array_values($unique));
+    }
+
+    public function isNeedsApproval(): ?bool
+    {
+        return $this->needsApproval;
+    }
+
+    public function setNeedsApproval(?bool $needsApproval): static
+    {
+        $this->needsApproval = $needsApproval;
+
+        return $this;
     }
 }

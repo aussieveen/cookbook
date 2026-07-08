@@ -29,7 +29,10 @@ else
     echo "Directory '$DIR' already exists."
 fi
 
-service nginx start
+# ponytail: worker containers skip nginx; CONTAINER_ROLE=worker to opt out
+if [ "${CONTAINER_ROLE:-app}" = "app" ]; then
+    service nginx start
+fi
 
 chmod -R 777 var
 

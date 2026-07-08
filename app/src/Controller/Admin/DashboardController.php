@@ -2,8 +2,7 @@
 
 namespace App\Controller\Admin;
 
-use App\Entity\IngredientName;
-use App\Entity\Recipe;
+use App\Repository\RecipeRepository;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
@@ -15,6 +14,10 @@ use Symfony\Component\HttpFoundation\Response;
 #[AdminDashboard(routePath: '/admin', routeName: 'admin')]
 class DashboardController extends AbstractDashboardController
 {
+    public function __construct(private readonly RecipeRepository $recipeRepository)
+    {
+    }
+
     public function index(): Response
     {
         return $this->render('admin/dashboard.html.twig');
@@ -34,8 +37,25 @@ class DashboardController extends AbstractDashboardController
 
     public function configureMenuItems(): iterable
     {
+        $pendingCount = $this->recipeRepository->count(['needsApproval' => true]);
+
         yield MenuItem::linkToUrl('Dashboard', 'fa fa-home', '/admin');
-        yield MenuItem::linkToCrud('Recipe', 'fas fa-rectangle-list', Recipe::class);
-        yield MenuItem::linkToCrud('Ingredient Names', 'fas fa-tag', IngredientName::class);
+        yield MenuItem::linkTo(RecipeCrudController::class, 'Recipe', 'fas fa-rectangle-list');
+
+        if ($pendingCount > 0) {
+            yield MenuItem::linkTo(
+                RecipeCrudController::class,
+                sprintf(
+                    'Pending Approval (%d)',
+                    $pendingCount
+                ),
+                'fas fa-clock'
+            )
+                ->setQueryParameter('filters[needsApproval][comparison]', '=')
+                ->setQueryParameter('filters[needsApproval][value]', '1');
+        }
+
+        yield MenuItem::linkTo(IngredientNameCrudController::class, 'Ingredient Names', 'fas fa-tag');
+        yield MenuItem::linkToRoute('Queue Status', 'fa fa-list', 'admin_queue_status');
     }
 }
