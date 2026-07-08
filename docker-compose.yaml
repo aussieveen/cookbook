@@ -30,6 +30,18 @@ services:
         MYSQL_PASSWORD: dbpassword
       volumes:
         - db_data:/var/lib/mysql:rw
+  worker:
+    image: cookbook-app:local
+    command: php bin/console messenger:consume async failed --time-limit=3600 --failure-limit=5
+    restart: unless-stopped
+    environment:
+      OPCACHE_VALIDATE_TIMESTAMPS: 1
+      ENV: prod
+    volumes:
+      - ./app:/var/www/html:rw,cached
+    depends_on:
+      - app
+      - database
   database_test:
     image: mysql:latest
     environment:

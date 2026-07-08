@@ -8,9 +8,12 @@ use App\Entity\Recipe;
 use App\Enum\Course;
 use App\Enum\MealOccasion;
 use App\Service\ImageUploader;
+use App\Service\StorageUrlResolver;
+use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
@@ -19,8 +22,10 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use EasyCorp\Bundle\EasyAdminBundle\Filter\ChoiceFilter;
+use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
  * @SuppressWarnings(PHPMD.StaticAccess)
@@ -30,10 +35,7 @@ class RecipeCrudController extends AbstractCrudController
 {
     public function __construct(
         private ImageUploader $imageUploader,
-        #[Autowire('%s3.bucket.name%')]
-        private string $s3BucketName,
-        #[Autowire('%s3.bucket.region%')]
-        private string $s3Region,
+        private StorageUrlResolver $storageUrlResolver,
     ) {
     }
 
@@ -50,11 +52,7 @@ class RecipeCrudController extends AbstractCrudController
             TextareaField::new('description'),
             ImageField::new('image')
                 ->setUploadDir('public/uploads/images')
-                ->setBasePath(sprintf(
-                    'https://%s.s3.%s.amazonaws.com/images/',
-                    $this->s3BucketName,
-                    $this->s3Region
-                ))
+                ->setBasePath($this->storageUrlResolver->getBaseUrl())
                 ->setRequired(false)
                 ->setLabel('Image')
                 ->setFormTypeOption('upload_new', function ($uploadedFile) {
@@ -97,16 +95,61 @@ class RecipeCrudController extends AbstractCrudController
         ];
     }
 
+    public function configureFilters(Filters $filters): Filters
+    {
+        return $filters->add(
+            ChoiceFilter::new('needsApproval', 'Approval Status')
+                ->setChoices(['Pending' => '1', 'Approved' => '0'])
+        );
+    }
+
     public function configureActions(Actions $actions): Actions
     {
+        $parseAction = Action::new('parseImages', 'Parse from Images')
+            ->linkToRoute('admin_recipe_parse_images')
+            ->createAsGlobalAction()
+            ->setCssClass('btn btn-success');
 
         $importAction = Action::new('import', 'Import Recipe')
             ->linkToRoute('admin_recipe_import')
             ->createAsGlobalAction()
             ->setCssClass('btn btn-primary');
 
+        $approveAction = Action::new('approveRecipe', 'Approve', 'fa fa-check')
+            ->linkToCrudAction('approveRecipe')
+            ->setCssClass('btn btn-sm btn-warning')
+            ->displayIf(fn(Recipe $r) => (bool) $r->isNeedsApproval());
+
+        $actions->add(Crud::PAGE_INDEX, $parseAction);
         $actions->add(Crud::PAGE_INDEX, $importAction);
+        $actions->add(Crud::PAGE_INDEX, $approveAction);
+        $actions->add(Crud::PAGE_DETAIL, $approveAction);
 
         return $actions;
+    }
+
+    public function updateEntity(EntityManagerInterface $entityManager, mixed $entityInstance): void
+    {
+        if ($entityInstance instanceof Recipe) {
+            $entityInstance->setNeedsApproval(false);
+        }
+        parent::updateEntity($entityManager, $entityInstance);
+    }
+
+    public function approveRecipe(EntityManagerInterface $em): RedirectResponse
+    {
+        /** @var Recipe $recipe */
+        $recipe = $this->getContext()->getEntity()->getInstance();
+        $recipe->setNeedsApproval(false);
+        $em->flush();
+
+        $this->addFlash('success', sprintf('"%s" approved and published.', $recipe->getName()));
+
+        return $this->redirect(
+            $this->container->get(AdminUrlGeneratorInterface::class)
+                ->setController(self::class)
+                ->setAction(Action::INDEX)
+                ->generateUrl()
+        );
     }
 }

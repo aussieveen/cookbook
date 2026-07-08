@@ -9,5 +9,5 @@ flysystem:
             adapter: 'aws'
             options:
                 client: 'aws.client'
-                bucket: '%env(AWS_S3_BUCKET)%'
+                bucket: '%env(default::AWS_S3_BUCKET)%'
                 prefix: 'images'

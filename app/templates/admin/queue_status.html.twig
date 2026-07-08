@@ -1,0 +1,84 @@
+{% extends '@!EasyAdmin/page/content.html.twig' %}
+
+{% block content_title %}
+    <h1 class="title">Queue Status</h1>
+{% endblock %}
+
+{% block main %}
+    {% set waiting = messages|filter(m => m.status == 'waiting') %}
+    {% set processing = messages|filter(m => m.status == 'processing') %}
+    {% set failed = messages|filter(m => m.status == 'failed') %}
+
+    <div class="d-flex gap-3 mb-4">
+        <span class="badge bg-secondary fs-6">Waiting: {{ waiting|length }}</span>
+        <span class="badge bg-primary fs-6">Processing: {{ processing|length }}</span>
+        <span class="badge bg-danger fs-6">Failed: {{ failed|length }}</span>
+    </div>
+
+    {% if messages is empty %}
+        <p class="text-muted">No messages in the queue.</p>
+    {% else %}
+        <table class="table table-bordered table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>Status</th>
+                    <th>Created</th>
+                    <th>Images</th>
+                    <th>Error</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for msg in messages %}
+                    <tr>
+                        <td>
+                            {% if msg.status == 'waiting' %}
+                                <span class="badge bg-secondary">Waiting</span>
+                            {% elseif msg.status == 'processing' %}
+                                <span class="badge bg-primary">Processing</span>
+                            {% else %}
+                                <span class="badge bg-danger">Failed</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ msg.created_at }}</td>
+                        <td>
+                            {% if msg.images is not empty %}
+                                <ul class="mb-0 ps-3">
+                                    {% for img in msg.images %}
+                                        <li><small>{{ img }}</small></li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <small class="text-muted">—</small>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if msg.error %}
+                                <small class="text-danger">{{ msg.error }}</small>
+                            {% else %}
+                                <small class="text-muted">—</small>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if msg.status == 'failed' %}
+                                <form method="post" action="{{ path('admin_queue_status_retry', {id: msg.id}) }}" class="d-inline">
+                                    <button class="btn btn-sm btn-warning" onclick="return confirm('Retry this message?')">Retry</button>
+                                </form>
+                                <form method="post" action="{{ path('admin_queue_status_delete', {id: msg.id}) }}" class="d-inline ms-1">
+                                    <button class="btn btn-sm btn-danger" onclick="return confirm('Delete this message?')">Delete</button>
+                                </form>
+                            {% else %}
+                                <small class="text-muted">—</small>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+    {% if waiting|length > 0 or processing|length > 0 %}
+        <script>setTimeout(() => location.reload(), 5000);</script>
+        <p class="text-muted"><small>Auto-refreshing every 5 seconds…</small></p>
+    {% endif %}
+{% endblock %}

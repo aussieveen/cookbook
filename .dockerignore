@@ -1,6 +1,7 @@
 *
 
 !/app/.env
+!/app/.env.*
 !/app/assets/
 !/app/bin/
 !/app/composer.*
