@@ -19,7 +19,10 @@ class IngredientNameCrudController extends AbstractCrudController
 
     public function configureCrud(Crud $crud): Crud
     {
-        return $crud->setDefaultSort(['name' => 'ASC']);
+        return $crud
+            ->setEntityLabelInSingular('Ingredient Name')
+            ->setEntityLabelInPlural('Ingredient Names')
+            ->setDefaultSort(['name' => 'ASC']);
     }
 
     /** @SuppressWarnings(PHPMD.UnusedFormalParameter) */
