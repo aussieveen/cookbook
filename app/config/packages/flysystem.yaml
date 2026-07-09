@@ -1,17 +1,9 @@
 # Read the documentation at https://github.com/thephpleague/flysystem-bundle/blob/master/docs/1-getting-started.md
 flysystem:
     storages:
-        default.storage:
-            adapter: 'local'
-            options:
-                directory: '%kernel.project_dir%/public/uploads/images'
-        s3.storage:
+        active.storage:
             adapter: 'aws'
             options:
                 client: 'aws.client'
                 bucket: '%env(default:s3.fallback.bucket:AWS_S3_BUCKET)%'
                 prefix: 'images'
-        active.storage:
-            adapter: 'lazy'
-            options:
-                source: '%env(default:app.fallback.storage:STORAGE_ADAPTER)%'
