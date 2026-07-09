@@ -21,7 +21,9 @@ class IngredientCrudController extends AbstractCrudController
     public function configureFields(string $pageName): iterable
     {
         return [
-            AssociationField::new('ingredientName', 'Name')->autocomplete()->setRequired(true),
+            AssociationField::new('ingredientName', 'Name')
+                ->renderAsEmbeddedForm(IngredientNameCrudController::class)
+                ->setRequired(true),
             TextField::new('measurement', 'Measurement'),
             TextField::new('revisedMeasurement', 'Revised Measurement'),
             TextField::new('note', 'Note'),
