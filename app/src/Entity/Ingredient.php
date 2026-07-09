@@ -30,7 +30,7 @@ class Ingredient
     #[ORM\JoinColumn(nullable: false)]
     private ?Component $component = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(cascade: ['persist'])]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['recipe:detail'])]
     private ?IngredientName $ingredientName = null;

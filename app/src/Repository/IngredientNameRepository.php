@@ -5,8 +5,9 @@ namespace App\Repository;
 use App\Entity\IngredientName;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Contracts\Service\ResetInterface;
 
-class IngredientNameRepository extends ServiceEntityRepository
+class IngredientNameRepository extends ServiceEntityRepository implements ResetInterface
 {
     /** @var array<string, IngredientName> */
     private array $pendingByName = [];
@@ -14,6 +15,11 @@ class IngredientNameRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, IngredientName::class);
+    }
+
+    public function reset(): void
+    {
+        $this->pendingByName = [];
     }
 
     public function findOrCreate(string $name): IngredientName
