@@ -16,27 +16,14 @@ class StorageUrlResolver
     ) {
     }
 
-    public function isS3(): bool
-    {
-        return !empty($this->bucket);
-    }
-
     public function getPublicUrl(string $key): string
     {
-        if ($this->isS3()) {
-            return sprintf('https://%s.s3.%s.amazonaws.com/images/%s', $this->bucket, $this->region, $key);
-        }
-
-        return '/uploads/images/' . $key;
+        return sprintf('https://%s.s3.%s.amazonaws.com/images/%s', $this->bucket, $this->region, $key);
     }
 
     /** Base URL for EasyAdmin ImageField::setBasePath() */
     public function getBaseUrl(): string
     {
-        if ($this->isS3()) {
-            return sprintf('https://%s.s3.%s.amazonaws.com/images/', $this->bucket, $this->region);
-        }
-
-        return '/uploads/images/';
+        return sprintf('https://%s.s3.%s.amazonaws.com/images/', $this->bucket, $this->region);
     }
 }
