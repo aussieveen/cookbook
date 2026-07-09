@@ -44,6 +44,11 @@ class RecipeCrudController extends AbstractCrudController
         return Recipe::class;
     }
 
+    public function configureCrud(Crud $crud): Crud
+    {
+        return $crud->setDefaultSort(['name' => 'ASC']);
+    }
+
     /** @SuppressWarnings(PHPMD.UnusedFormalParameter) */
     public function configureFields(string $pageName): iterable
     {

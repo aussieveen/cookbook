@@ -10,6 +10,7 @@ use App\Entity\Recipe;
 use App\Entity\Step;
 use App\Message\ParseRecipeImagesMessage;
 use App\Repository\IngredientNameRepository;
+use App\Repository\RecipeRepository;
 use App\Service\AiRecipeParser;
 use Doctrine\ORM\EntityManagerInterface;
 use League\Flysystem\FilesystemOperator;
@@ -24,6 +25,7 @@ class ParseRecipeImagesHandler
         private readonly AiRecipeParser $parser,
         private readonly EntityManagerInterface $entityManager,
         private readonly IngredientNameRepository $ingredientNameRepository,
+        private readonly RecipeRepository $recipeRepository,
         private readonly FilesystemOperator $activeStorage,
         private readonly LoggerInterface $logger,
     ) {
@@ -53,6 +55,12 @@ class ParseRecipeImagesHandler
 
         $recipe = new Recipe();
         $recipe->setName($data['name']);
+
+        if ($this->recipeRepository->findOneBy(['name' => $data['name']]) !== null) {
+            $this->logger->warning('Duplicate recipe upload skipped', ['name' => $data['name']]);
+            return;
+        }
+
         $recipe->setDescription($data['description'] ?? null);
         $recipe->setNeedsApproval(true);
 
@@ -69,6 +77,7 @@ class ParseRecipeImagesHandler
                 $ingredient = new Ingredient();
                 $ingredient->setIngredientName($ingredientName);
                 $ingredient->setMeasurement($ingredientData['measurement']);
+                $ingredient->setNote($ingredientData['note'] ?? null);
                 $component->addIngredient($ingredient);
                 $this->entityManager->persist($ingredient);
             }

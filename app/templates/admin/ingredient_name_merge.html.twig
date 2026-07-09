@@ -1,0 +1,101 @@
+{% extends '@!EasyAdmin/page/content.html.twig' %}
+
+{% block content_title %}Merge Ingredient Names{% endblock %}
+
+{% block main %}
+    <p class="help-block mb-3">
+        Select the name to <strong>replace</strong> and the name to <strong>keep</strong>.
+        All recipes using the replaced name will be updated to use the kept name.
+    </p>
+
+    {% if preview is null %}
+        {# Step 1: select names #}
+        <form method="post" action="{{ path('admin_ingredient_name_merge') }}" class="row g-3 align-items-end">
+            <div class="col-md-5">
+                <label for="from_id" class="form-label fw-semibold">Replace (remove this name)</label>
+                <select name="from_id" id="from_id" class="form-select" required>
+                    <option value="">— select —</option>
+                    {% for name in allNames %}
+                        <option value="{{ name.id }}">{{ name.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-5">
+                <label for="to_id" class="form-label fw-semibold">Keep (update to this name)</label>
+                <select name="to_id" id="to_id" class="form-select" required>
+                    <option value="">— select —</option>
+                    {% for name in allNames %}
+                        <option value="{{ name.id }}">{{ name.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" name="action" value="preview" class="btn btn-primary w-100">Preview</button>
+            </div>
+        </form>
+
+    {% else %}
+        {# Step 2: preview and confirm #}
+        <div class="alert alert-warning">
+            Replacing <strong>{{ fromName.name }}</strong> with <strong>{{ toName.name }}</strong>
+            across <strong>{{ preview|length }}</strong> ingredient(s).
+        </div>
+
+        {% if preview is empty %}
+            <p class="text-muted">No ingredients use "{{ fromName.name }}" — nothing to do.</p>
+        {% else %}
+            {% set byRecipe = {} %}
+            {% for ingredient in preview %}
+                {% set recipeName = ingredient.component.recipe.name %}
+                {% set byRecipe = byRecipe|merge({(recipeName): (byRecipe[recipeName] is defined ? byRecipe[recipeName]|merge([ingredient]) : [ingredient])}) %}
+            {% endfor %}
+
+            <form method="post" action="{{ path('admin_ingredient_name_merge') }}">
+                <input type="hidden" name="from_id" value="{{ fromName.id }}">
+                <input type="hidden" name="to_id" value="{{ toName.id }}">
+                <input type="hidden" name="_token" value="{{ csrfToken }}">
+
+                <table class="table table-bordered table-hover mb-3">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Recipe</th>
+                            <th>Measurement</th>
+                            <th>Note <small class="text-muted">(editable)</small></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for recipeName, ingredients in byRecipe %}
+                            {% for ingredient in ingredients %}
+                                <tr>
+                                    {% if loop.first %}
+                                        <td rowspan="{{ ingredients|length }}">{{ recipeName }}</td>
+                                    {% endif %}
+                                    <td>
+                                        <input type="text" class="form-control form-control-sm"
+                                               name="measurements[{{ ingredient.id }}]"
+                                               value="{{ ingredient.measurement }}">
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control form-control-sm"
+                                               name="notes[{{ ingredient.id }}]"
+                                               value="{{ ingredient.note ?? '' }}"
+                                               placeholder="add a note…">
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" name="action" value="confirm" class="btn btn-danger"
+                            onclick="return confirm('This will permanently remove {{ fromName.name }} and update all affected ingredients. Continue?')">
+                        Confirm Merge
+                    </button>
+                    <a href="{{ path('admin_ingredient_name_merge') }}" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+        {% endif %}
+    {% endif %}
+{% endblock %}
+

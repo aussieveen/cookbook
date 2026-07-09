@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Ingredient;
+use App\Entity\IngredientName;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -16,28 +17,22 @@ class IngredientRepository extends ServiceEntityRepository
         parent::__construct($registry, Ingredient::class);
     }
 
-    //    /**
-    //     * @return Ingredient[] Returns an array of Ingredient objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('i')
-    //            ->andWhere('i.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('i.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?Ingredient
-    //    {
-    //        return $this->createQueryBuilder('i')
-    //            ->andWhere('i.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    /**
+     * Return all Ingredient rows that reference the given IngredientName,
+     * with their component and recipe eagerly loaded for display.
+     *
+     * @return Ingredient[]
+     */
+    public function findByIngredientName(IngredientName $ingredientName): array
+    {
+        return $this->createQueryBuilder('i')
+            ->join('i.component', 'c')
+            ->join('c.recipe', 'r')
+            ->addSelect('c', 'r')
+            ->where('i.ingredientName = :name')
+            ->setParameter('name', $ingredientName)
+            ->orderBy('r.name', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 }
