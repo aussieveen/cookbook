@@ -36,7 +36,8 @@ class AiRecipeParser
      *         name: ?string,
      *         ingredients: list<array{
      *             name: string,
-     *             measurement: string
+     *             measurement: string,
+     *             note: ?string
      *         }>
      *     }>,
      *     steps: list<string>,
@@ -143,6 +144,8 @@ Rules:
 3. Return ONLY a JSON object — no markdown, no explanation, just the raw JSON.
 4. If any of the {$imageCount} image(s) appears to be a food/dish photograph rather than text/ingredient content, set photo_index to its 1-based index. Otherwise set photo_index to null.
 5. When photo_index is set, also set photo_crop to the tightest bounding box around ONLY the food/dish photograph in that image, expressed as percentages (0-100) of the image dimensions. Aggressively exclude: header bars, text overlays, ingredient panels, nutrition labels, logos, watermarks, cutlery, decorative borders, and any non-photographic UI elements — even if they are at the edges of an otherwise photographic image. If the food genuinely fills the entire frame with no UI chrome, use {"x_pct":0,"y_pct":0,"width_pct":100,"height_pct":100}. Set photo_crop to null when photo_index is null.
+6. Group steps by the subject being worked on — all actions focused on the same ingredient or component belong in one step (e.g. everything for making mash, or all prep for one vegetable). Start a new step when the cook switches focus to a different ingredient or component, including when "meanwhile" or similar introduces work on something different. A step may contain multiple sentences if they all concern the same subject. Do not split sentences that are part of the same continuous task; do not keep sentences together that are working on different subjects.
+7. For ingredients, put ONLY the ingredient name in "name" and ONLY the quantity/unit in "measurement". Any annotation such as "optional", "to serve", "to garnish", "for the sauce", "for the dressing", or similar qualifiers must go in the "note" field (string or null). Do not embed these annotations in "name" or "measurement".
 
 Return this exact structure:
 {
@@ -152,7 +155,7 @@ Return this exact structure:
     {
       "name": null,
       "ingredients": [
-        {"name": "ingredient name", "measurement": "quantity and unit"}
+        {"name": "ingredient name", "measurement": "quantity and unit", "note": null}
       ]
     }
   ],
