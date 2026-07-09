@@ -59,6 +59,6 @@ class RecipeRepository extends ServiceEntityRepository
                ->setParameter('occasion', '%"' . $mealOccasion->value . '"%');
         }
 
-        return $qb->getQuery()->getResult();
+        return $qb->orderBy('r.name', 'ASC')->getQuery()->getResult();
     }
 }

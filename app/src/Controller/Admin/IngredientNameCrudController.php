@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controller\Admin;
 
 use App\Entity\IngredientName;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 
@@ -14,6 +15,11 @@ class IngredientNameCrudController extends AbstractCrudController
     public static function getEntityFqcn(): string
     {
         return IngredientName::class;
+    }
+
+    public function configureCrud(Crud $crud): Crud
+    {
+        return $crud->setDefaultSort(['name' => 'ASC']);
     }
 
     /** @SuppressWarnings(PHPMD.UnusedFormalParameter) */

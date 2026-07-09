@@ -56,6 +56,7 @@ class DashboardController extends AbstractDashboardController
         }
 
         yield MenuItem::linkTo(IngredientNameCrudController::class, 'Ingredient Names', 'fas fa-tag');
+        yield MenuItem::linkToRoute('Merge Names', 'fas fa-code-merge', 'admin_ingredient_name_merge');
         yield MenuItem::linkToRoute('Queue Status', 'fa fa-list', 'admin_queue_status');
     }
 }

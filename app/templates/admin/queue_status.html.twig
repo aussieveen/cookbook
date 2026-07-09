@@ -1,12 +1,9 @@
 {% extends '@!EasyAdmin/page/content.html.twig' %}
 
-{% block head_favicon %}{% endblock %}
-
-{% block content_title %}
-    <h1 class="title">Queue Status</h1>
-{% endblock %}
+{% block content_title %}Queue Status{% endblock %}
 
 {% block main %}
+    <h1 class="h3 mb-3">Queue Status</h1>
     {% set waiting = messages|filter(m => m.status == 'waiting') %}
     {% set processing = messages|filter(m => m.status == 'processing') %}
     {% set failed = messages|filter(m => m.status == 'failed') %}

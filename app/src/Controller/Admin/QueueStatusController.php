@@ -10,7 +10,11 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/admin/queue-status', name: 'admin_queue_status')]
+#[Route(
+    '/admin/queue-status',
+    name: 'admin_queue_status',
+    defaults: ['dashboardControllerFqcn' => DashboardController::class]
+)]
 class QueueStatusController extends AbstractController
 {
     public function __construct(private readonly Connection $connection)
