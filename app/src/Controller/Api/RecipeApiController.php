@@ -31,6 +31,13 @@ class RecipeApiController extends AbstractController
             . 'All filters are optional and combinable.',
     )]
     #[OA\Parameter(
+        name: 'q',
+        description: 'Search by recipe name (partial match)',
+        in: 'query',
+        required: false,
+        schema: new OA\Schema(type: 'string')
+    )]
+    #[OA\Parameter(
         name: 'ingredients[]',
         description: 'Filter by ingredient name (partial match). '
             . 'Repeat for multiple: ?ingredients[]=sausage&ingredients[]=pasta',
@@ -66,10 +73,11 @@ class RecipeApiController extends AbstractController
     public function index(Request $request): JsonResponse
     {
         $ingredientNames = $request->query->all('ingredients');
+        $nameQuery       = $request->query->getString('q') ?: null;
         $mealOccasion    = $this->enumFromQuery($request, 'meal_occasion', MealOccasion::class);
         $course          = $this->enumFromQuery($request, 'course', Course::class);
 
-        $recipes = $this->recipeRepository->search($ingredientNames, $mealOccasion, $course);
+        $recipes = $this->recipeRepository->search($ingredientNames, $mealOccasion, $course, $nameQuery);
 
         return $this->json($recipes, context: ['groups' => ['recipe:summary']]);
     }

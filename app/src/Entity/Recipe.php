@@ -35,7 +35,7 @@ class Recipe
     private ?string $description = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['recipe:detail'])]
+    #[Groups(['recipe:summary', 'recipe:detail'])]
     private ?string $image = null;
 
     /**
