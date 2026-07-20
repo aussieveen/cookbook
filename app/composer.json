@@ -6,8 +6,8 @@
     "require": {
         "php": ">=8.3",
         "ext-ctype": "*",
-        "ext-iconv": "*",
         "ext-gd": "*",
+        "ext-iconv": "*",
         "doctrine/doctrine-bundle": "^2.18.3",
         "doctrine/doctrine-migrations-bundle": "^3.7",
         "doctrine/orm": "^3.6.7",
@@ -26,6 +26,7 @@
         "symfony/messenger": "^7.4.14",
         "symfony/runtime": "^7.4.14",
         "symfony/serializer": "^7.4.14",
+        "symfony/ux-autocomplete": "^3.3",
         "symfony/webpack-encore-bundle": "^2.4.1",
         "symfony/yaml": "^7.4.14"
     },

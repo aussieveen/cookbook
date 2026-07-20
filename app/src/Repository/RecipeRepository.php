@@ -32,7 +32,8 @@ class RecipeRepository extends ServiceEntityRepository
     public function search(
         array $ingredientNames = [],
         ?MealOccasion $mealOccasion = null,
-        ?Course $course = null
+        ?Course $course = null,
+        ?string $nameQuery = null,
     ): array {
         $qb = $this->createQueryBuilder('r');
 
@@ -47,6 +48,11 @@ class RecipeRepository extends ServiceEntityRepository
             }
 
             $qb->distinct();
+        }
+
+        if ($nameQuery !== null && $nameQuery !== '') {
+            $qb->andWhere('LOWER(r.name) LIKE LOWER(:nameQuery)')
+               ->setParameter('nameQuery', '%' . $nameQuery . '%');
         }
 
         if ($course !== null) {

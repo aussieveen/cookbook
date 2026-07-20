@@ -41,7 +41,7 @@ class IngredientNameRepository extends ServiceEntityRepository implements ResetI
         }
 
         $ingredientName = new IngredientName();
-        $ingredientName->setName($name);
+        $ingredientName->setName(mb_convert_case(trim($name), MB_CASE_TITLE, 'UTF-8'));
         $this->getEntityManager()->persist($ingredientName);
 
         return $this->pendingByName[$key] = $ingredientName;
