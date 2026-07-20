@@ -37,11 +37,13 @@ class RecipeNormalizer implements NormalizerInterface, NormalizerAwareInterface
         return $data;
     }
 
+    /** @SuppressWarnings(PHPMD.UnusedFormalParameter) */
     public function supportsNormalization(mixed $data, ?string $format = null, array $context = []): bool
     {
         return $data instanceof Recipe && !isset($context[self::ALREADY_CALLED]);
     }
 
+    /** @SuppressWarnings(PHPMD.UnusedFormalParameter) */
     public function getSupportedTypes(?string $format): array
     {
         return [Recipe::class => false];
