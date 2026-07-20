@@ -11,6 +11,7 @@ enum MealOccasion: string
     case LUNCH = 'lunch';
     case DINNER = 'dinner';
     case SUPPER = 'supper';
+    case SNACK = 'snack';
 
     public function label(): string
     {
