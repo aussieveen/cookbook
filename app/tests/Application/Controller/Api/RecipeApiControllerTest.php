@@ -39,14 +39,14 @@ class RecipeApiControllerTest extends WebTestCase
 
     public function testIndexFiltersByCourse(): void
     {
-        $this->seedRecipe('Soup', course: Course::SOUP);
-        $this->seedRecipe('Salad', course: Course::SALAD);
+        $this->seedRecipe('Roast Lamb', course: Course::MAIN);
+        $this->seedRecipe('Ice Cream', course: Course::DESSERT);
 
-        $this->client->request('GET', '/api/v1/recipes?course=soup');
+        $this->client->request('GET', '/api/v1/recipes?course=main');
         $data = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertCount(1, $data);
-        $this->assertSame('Soup', $data[0]['name']);
+        $this->assertSame('Roast Lamb', $data[0]['name']);
     }
 
     public function testIndexFiltersByMealOccasion(): void
