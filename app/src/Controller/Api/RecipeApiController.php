@@ -62,6 +62,13 @@ class RecipeApiController extends AbstractController
             enum: ['starter', 'main', 'side', 'dessert']
         )
     )]
+    #[OA\Parameter(
+        name: 'exclude_ids[]',
+        description: 'Exclude recipes by ID. Repeat for multiple: ?exclude_ids[]=1&exclude_ids[]=2',
+        in: 'query',
+        required: false,
+        schema: new OA\Schema(type: 'array', items: new OA\Items(type: 'integer'))
+    )]
     #[OA\Response(
         response: 200,
         description: 'Array of recipe summaries (id, name, slug, course, mealOccasions, mastered)',
@@ -76,8 +83,9 @@ class RecipeApiController extends AbstractController
         $nameQuery       = $request->query->getString('q') ?: null;
         $mealOccasion    = $this->enumFromQuery($request, 'meal_occasion', MealOccasion::class);
         $course          = $this->enumFromQuery($request, 'course', Course::class);
+        $excludeIds      = array_map('intval', $request->query->all('exclude_ids'));
 
-        $recipes = $this->recipeRepository->search($ingredientNames, $mealOccasion, $course, $nameQuery);
+        $recipes = $this->recipeRepository->search($ingredientNames, $mealOccasion, $course, $nameQuery, $excludeIds);
 
         return $this->json($recipes, context: ['groups' => ['recipe:summary']]);
     }
