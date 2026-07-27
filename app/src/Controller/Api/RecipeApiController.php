@@ -138,12 +138,6 @@ class RecipeApiController extends AbstractController
             fn(Recipe $r) => $r->getCourse() === Course::SIDE
         );
 
-        if ($sides->isEmpty()) {
-            $sides = $this->recipeRepository->search(course: Course::SIDE);
-
-            return $this->json($sides, context: ['groups' => ['recipe:summary']]);
-        }
-
         return $this->json($sides->getValues(), context: ['groups' => ['recipe:summary']]);
     }
 
