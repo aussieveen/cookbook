@@ -68,6 +68,7 @@ class RecipeCrudController extends AbstractCrudController
                     return null;
                 }),
             BooleanField::new('mastered'),
+            BooleanField::new('favourite'),
             ChoiceField::new('course')
                 ->setChoices(array_combine(
                     array_map(fn(Course $c) => $c->label(), Course::cases()),

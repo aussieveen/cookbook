@@ -9,6 +9,7 @@ use App\Enum\Course;
 use App\Enum\MealOccasion;
 use App\Repository\RecipeRepository;
 use BackedEnum;
+use Doctrine\ORM\EntityManagerInterface;
 use Nelmio\ApiDocBundle\Attribute\Model;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -20,8 +21,10 @@ use Symfony\Component\Routing\Attribute\Route;
 #[OA\Tag(name: 'Recipes')]
 class RecipeApiController extends AbstractController
 {
-    public function __construct(private RecipeRepository $recipeRepository)
-    {
+    public function __construct(
+        private RecipeRepository $recipeRepository,
+        private EntityManagerInterface $em,
+    ) {
     }
 
     #[Route('/recipes', name: 'api_recipes_index', methods: ['GET'])]
@@ -147,5 +150,21 @@ class RecipeApiController extends AbstractController
         $value = $request->query->get($param);
 
         return $value !== null ? $enumClass::tryFrom($value) : null;
+    }
+
+    #[Route('/recipes/{id}/favourite', name: 'api_recipes_toggle_favourite', methods: ['PATCH'])]
+    #[OA\Patch(summary: 'Toggle favourite flag on a recipe')]
+    #[OA\Response(
+        response: 200,
+        description: 'Updated favourite state',
+        content: new OA\JsonContent(properties: [new OA\Property(property: 'favourite', type: 'boolean')])
+    )]
+    #[OA\Response(response: 404, description: 'Recipe not found')]
+    public function toggleFavourite(Recipe $recipe): JsonResponse
+    {
+        $recipe->setFavourite(!($recipe->isFavourite() ?? false));
+        $this->em->flush();
+
+        return $this->json(['favourite' => $recipe->isFavourite()]);
     }
 }

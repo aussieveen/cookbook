@@ -90,6 +90,10 @@ class Recipe
     private Collection $pairedBy;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['recipe:summary', 'recipe:detail'])]
+    private ?bool $favourite = null;
+
+    #[ORM\Column(nullable: true)]
     private ?bool $needsApproval = null;
 
     public function __construct()
@@ -346,6 +350,18 @@ class Recipe
     public function setNeedsApproval(?bool $needsApproval): static
     {
         $this->needsApproval = $needsApproval;
+
+        return $this;
+    }
+
+    public function isFavourite(): ?bool
+    {
+        return $this->favourite;
+    }
+
+    public function setFavourite(?bool $favourite): static
+    {
+        $this->favourite = $favourite;
 
         return $this;
     }
