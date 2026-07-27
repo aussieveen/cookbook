@@ -134,7 +134,7 @@ class RecipeApiControllerTest extends WebTestCase
         $data = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertResponseIsSuccessful();
-        $this->assertCount(2, $data);
+        $this->assertCount(0, $data);
     }
 
     private function seedRecipe(

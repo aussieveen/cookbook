@@ -4,24 +4,19 @@ declare(strict_types=1);
 
 namespace App\Service;
 
-use App\Entity\ShoppingListItem;
+use App\Entity\Recipe;
 
 class ShoppingListService
 {
     /**
-     * @param ShoppingListItem[] $items
+     * @param Recipe[] $recipes
      * @return array<array{name: string, display: string}>
      */
-    public function consolidate(array $items): array
+    public function consolidate(array $recipes): array
     {
         $groups = [];
 
-        foreach ($items as $item) {
-            $recipe = $item->getRecipe();
-            if ($recipe === null) {
-                continue;
-            }
-
+        foreach ($recipes as $recipe) {
             foreach ($recipe->getComponents() as $component) {
                 foreach ($component->getIngredients() as $ingredient) {
                     $ingredientName = $ingredient->getIngredientName();

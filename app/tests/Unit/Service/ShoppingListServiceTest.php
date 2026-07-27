@@ -8,7 +8,6 @@ use App\Entity\Component;
 use App\Entity\Ingredient;
 use App\Entity\IngredientName;
 use App\Entity\Recipe;
-use App\Entity\ShoppingListItem;
 use App\Service\ShoppingListService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Mockery;
@@ -36,17 +35,6 @@ class ShoppingListServiceTest extends TestCase
         $this->assertSame([], $result);
     }
 
-    public function testConsolidateSkipsItemWithNullRecipe(): void
-    {
-        /** @var ShoppingListItem&MockInterface $item */
-        $item = Mockery::mock(ShoppingListItem::class);
-        $item->shouldReceive('getRecipe')->andReturn(null);
-
-        $result = $this->service->consolidate([$item]);
-
-        $this->assertSame([], $result);
-    }
-
     public function testConsolidateSkipsIngredientWithNullIngredientName(): void
     {
         $ingredientName = null;
@@ -63,11 +51,7 @@ class ShoppingListServiceTest extends TestCase
         $recipe = Mockery::mock(Recipe::class);
         $recipe->shouldReceive('getComponents')->andReturn(new ArrayCollection([$component]));
 
-        /** @var ShoppingListItem&MockInterface $item */
-        $item = Mockery::mock(ShoppingListItem::class);
-        $item->shouldReceive('getRecipe')->andReturn($recipe);
-
-        $result = $this->service->consolidate([$item]);
+        $result = $this->service->consolidate([$recipe]);
 
         $this->assertSame([], $result);
     }
@@ -136,9 +120,9 @@ class ShoppingListServiceTest extends TestCase
     }
 
     /**
-     * Helper to build a ShoppingListItem mock containing one ingredient.
+     * Helper to build a Recipe mock containing one ingredient.
      */
-    private function makeItem(int $nameId, string $name, ?float $baseQuantity, ?string $baseUnit): ShoppingListItem
+    private function makeItem(int $nameId, string $name, ?float $baseQuantity, ?string $baseUnit): Recipe
     {
         /** @var IngredientName&MockInterface $ingredientName */
         $ingredientName = Mockery::mock(IngredientName::class);
@@ -159,10 +143,6 @@ class ShoppingListServiceTest extends TestCase
         $recipe = Mockery::mock(Recipe::class);
         $recipe->shouldReceive('getComponents')->andReturn(new ArrayCollection([$component]));
 
-        /** @var ShoppingListItem&MockInterface $item */
-        $item = Mockery::mock(ShoppingListItem::class);
-        $item->shouldReceive('getRecipe')->andReturn($recipe);
-
-        return $item;
+        return $recipe;
     }
 }
