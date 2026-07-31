@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Controller\Admin;
 
 use App\Entity\IngredientName;
+use App\Enum\IngredientCategory;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 
 /** @SuppressWarnings(PHPMD.StaticAccess) */
@@ -28,8 +30,18 @@ class IngredientNameCrudController extends AbstractCrudController
     /** @SuppressWarnings(PHPMD.UnusedFormalParameter) */
     public function configureFields(string $pageName): iterable
     {
+        $categoryChoices = [];
+        foreach (IngredientCategory::cases() as $case) {
+            $categoryChoices[$case->label()] = $case->value;
+        }
+
         return [
             TextField::new('name'),
+            ChoiceField::new('category')
+                ->setChoices($categoryChoices)
+                ->allowMultipleChoices(false)
+                ->renderExpanded(false)
+                ->setRequired(false),
         ];
     }
 }

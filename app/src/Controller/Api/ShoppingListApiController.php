@@ -48,7 +48,9 @@ class ShoppingListApiController extends AbstractController
             type: 'array',
             items: new OA\Items(
                 properties: [
+                    new OA\Property(property: 'id', type: 'integer', example: 42),
                     new OA\Property(property: 'name', type: 'string', example: 'Flour'),
+                    new OA\Property(property: 'category', type: 'string', nullable: true, example: 'store_cupboard'),
                     new OA\Property(property: 'display', type: 'string', example: '500g'),
                 ]
             )

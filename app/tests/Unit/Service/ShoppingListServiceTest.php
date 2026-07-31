@@ -128,6 +128,7 @@ class ShoppingListServiceTest extends TestCase
         $ingredientName = Mockery::mock(IngredientName::class);
         $ingredientName->shouldReceive('getId')->andReturn($nameId);
         $ingredientName->shouldReceive('getName')->andReturn($name);
+        $ingredientName->shouldReceive('getCategory')->andReturn(null);
 
         /** @var Ingredient&MockInterface $ingredient */
         $ingredient = Mockery::mock(Ingredient::class);
