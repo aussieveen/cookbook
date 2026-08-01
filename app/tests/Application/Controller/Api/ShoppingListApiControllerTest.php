@@ -82,8 +82,8 @@ class ShoppingListApiControllerTest extends WebTestCase
         $iname->setName('Flour');
         $this->entityManager->persist($iname);
 
-        $r1 = $this->seedRecipeWithSharedIngredient('Bread', $iname, 500.0, 'g');
-        $r2 = $this->seedRecipeWithSharedIngredient('Cake', $iname, 200.0, 'g');
+        $recipe1 = $this->seedRecipeWithSharedIngredient('Bread', $iname, 500.0, 'g');
+        $recipe2 = $this->seedRecipeWithSharedIngredient('Cake', $iname, 200.0, 'g');
 
         $this->client->request(
             'POST',
@@ -91,7 +91,7 @@ class ShoppingListApiControllerTest extends WebTestCase
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            json_encode(['recipeIds' => [$r1->getId(), $r2->getId()]])
+            json_encode(['recipeIds' => [$recipe1->getId(), $recipe2->getId()]])
         );
 
         $data = json_decode($this->client->getResponse()->getContent(), true);

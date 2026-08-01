@@ -13,7 +13,7 @@ enum IngredientCategory: string
 
     public function label(): string
     {
-        return match($this) {
+        return match ($this) {
             self::PRODUCE           => 'Produce',
             self::MEAT_AND_FISH     => 'Meat & Fish',
             self::DAIRY_AND_CHILLED => 'Dairy & Chilled',

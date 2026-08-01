@@ -21,6 +21,9 @@
     <!-- Ignore the migrations files, they are auto-generated -->
     <exclude-pattern>src/Migrations/*</exclude-pattern>
 
+    <!-- Ignore fixtures, they contain long data strings -->
+    <exclude-pattern>src/DataFixtures/*</exclude-pattern>
+
     <!-- PSR-12 Extended Coding Style -->
     <rule ref="PSR12" />
 </ruleset>

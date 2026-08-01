@@ -90,15 +90,22 @@ class IngredientNameApiController extends AbstractController
 
         if ($rawValue === null) {
             $ingredientName->setCategory(null);
-        } else {
-            $category = IngredientCategory::tryFrom($rawValue);
-            if ($category === null) {
-                $valid = implode(', ', array_column(IngredientCategory::cases(), 'value'));
+            $this->em->flush();
 
-                return $this->json(['error' => "Invalid category. Valid values: $valid"], 400);
-            }
-            $ingredientName->setCategory($category);
+            return $this->json([
+                'id'       => $ingredientName->getId(),
+                'name'     => $ingredientName->getName(),
+                'category' => null,
+            ]);
         }
+
+        $category = IngredientCategory::tryFrom($rawValue);
+        if ($category === null) {
+            $valid = implode(', ', array_column(IngredientCategory::cases(), 'value'));
+
+            return $this->json(['error' => "Invalid category. Valid values: $valid"], 400);
+        }
+        $ingredientName->setCategory($category);
 
         $this->em->flush();
 
