@@ -7,6 +7,7 @@ namespace App\Controller\Admin;
 use App\Entity\Recipe;
 use App\Enum\Course;
 use App\Enum\MealOccasion;
+use App\Repository\RecipeRepository;
 use App\Service\ImageUploader;
 use App\Service\StorageUrlResolver;
 use Doctrine\ORM\EntityManagerInterface;
@@ -67,6 +68,7 @@ class RecipeCrudController extends AbstractCrudController
                     return null;
                 }),
             BooleanField::new('mastered'),
+            BooleanField::new('favourite'),
             ChoiceField::new('course')
                 ->setChoices(array_combine(
                     array_map(fn(Course $c) => $c->label(), Course::cases()),
@@ -141,10 +143,10 @@ class RecipeCrudController extends AbstractCrudController
         parent::updateEntity($entityManager, $entityInstance);
     }
 
-    public function approveRecipe(EntityManagerInterface $em): RedirectResponse
+    public function approveRecipe(RecipeRepository $recipeRepository, EntityManagerInterface $em): RedirectResponse
     {
         /** @var Recipe $recipe */
-        $recipe = $this->getContext()->getEntity()->getInstance();
+        $recipe = $recipeRepository->find($this->getContext()->getRequest()->query->getInt('entityId'));
         $recipe->setNeedsApproval(false);
         $em->flush();
 

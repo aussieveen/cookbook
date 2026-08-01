@@ -4,24 +4,19 @@ declare(strict_types=1);
 
 namespace App\Service;
 
-use App\Entity\ShoppingListItem;
+use App\Entity\Recipe;
 
 class ShoppingListService
 {
     /**
-     * @param ShoppingListItem[] $items
-     * @return array<array{name: string, display: string}>
+     * @param Recipe[] $recipes
+     * @return array<array{id: int, name: string, category: string|null, display: string}>
      */
-    public function consolidate(array $items): array
+    public function consolidate(array $recipes): array
     {
         $groups = [];
 
-        foreach ($items as $item) {
-            $recipe = $item->getRecipe();
-            if ($recipe === null) {
-                continue;
-            }
-
+        foreach ($recipes as $recipe) {
             foreach ($recipe->getComponents() as $component) {
                 foreach ($component->getIngredients() as $ingredient) {
                     $ingredientName = $ingredient->getIngredientName();
@@ -34,7 +29,9 @@ class ShoppingListService
 
                     if (!isset($groups[$nameId])) {
                         $groups[$nameId] = [
+                            'id'            => $nameId,
                             'name'          => $name,
+                            'category'      => $ingredientName->getCategory()?->value,
                             'totalQuantity' => 0.0,
                             'unit'          => $ingredient->getBaseUnit(),
                             'unmeasurable'  => false,
@@ -54,8 +51,10 @@ class ShoppingListService
         $result = [];
         foreach ($groups as $group) {
             $result[] = [
-                'name'    => $group['name'],
-                'display' => $this->formatDisplay($group),
+                'id'       => $group['id'],
+                'name'     => $group['name'],
+                'category' => $group['category'],
+                'display'  => $this->formatDisplay($group),
             ];
         }
 
@@ -65,7 +64,7 @@ class ShoppingListService
     }
 
     /**
-     * @param array{name: string, totalQuantity: float, unit: ?string, unmeasurable: bool} $group
+     * @param array{name: string, category: string|null, totalQuantity: float, unit: ?string, unmeasurable: bool} $group
      */
     private function formatDisplay(array $group): string
     {

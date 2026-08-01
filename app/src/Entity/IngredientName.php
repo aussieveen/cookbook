@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enum\IngredientCategory;
 use App\Repository\IngredientNameRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;
@@ -18,6 +19,10 @@ class IngredientName
     #[Groups(['recipe:detail'])]
     private ?string $name = null;
 
+    #[ORM\Column(nullable: true, enumType: IngredientCategory::class)]
+    #[Groups(['recipe:detail'])]
+    private ?IngredientCategory $category = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -31,6 +36,18 @@ class IngredientName
     public function setName(string $name): static
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    public function getCategory(): ?IngredientCategory
+    {
+        return $this->category;
+    }
+
+    public function setCategory(?IngredientCategory $category): static
+    {
+        $this->category = $category;
 
         return $this;
     }

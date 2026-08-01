@@ -28,8 +28,9 @@ final class ShoppingListController extends AbstractController
     #[Route('', name: 'shopping_list_index', methods: ['GET'])]
     public function index(): Response
     {
-        $items       = $this->shoppingListItemRepository->findAllWithRecipes();
-        $consolidated = $this->shoppingListService->consolidate($items);
+        $items        = $this->shoppingListItemRepository->findAllWithRecipes();
+        $recipes      = array_values(array_filter(array_map(fn ($i) => $i->getRecipe(), $items)));
+        $consolidated = $this->shoppingListService->consolidate($recipes);
 
         return $this->render('shopping_list/index.html.twig', [
             'items'        => $items,

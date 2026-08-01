@@ -29,11 +29,17 @@ class RecipeRepository extends ServiceEntityRepository
      * @param string[] $ingredientNames
      * @return Recipe[]
      */
+    /**
+     * @param string[] $ingredientNames
+     * @param int[]    $excludeIds
+     * @return Recipe[]
+     */
     public function search(
         array $ingredientNames = [],
         ?MealOccasion $mealOccasion = null,
         ?Course $course = null,
         ?string $nameQuery = null,
+        array $excludeIds = [],
     ): array {
         $qb = $this->createQueryBuilder('r');
 
@@ -63,6 +69,10 @@ class RecipeRepository extends ServiceEntityRepository
         if ($mealOccasion !== null) {
             $qb->andWhere("r.mealOccasions LIKE :occasion")
                ->setParameter('occasion', '%"' . $mealOccasion->value . '"%');
+        }
+
+        if ($excludeIds !== []) {
+            $qb->andWhere('r.id NOT IN (:excludeIds)')->setParameter('excludeIds', $excludeIds);
         }
 
         return $qb->orderBy('r.name', 'ASC')->getQuery()->getResult();
