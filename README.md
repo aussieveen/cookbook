@@ -40,9 +40,7 @@ A personal recipe management application built with Symfony 7 and PHP 8.5. It al
 
 The EasyAdmin interface is available at `/admin`.
 
-Recipes can be imported from BBC Good Food via the import page at `/admin/import` — enter the recipe slug from the URL and it will be fetched and saved automatically.
-
-Recipes can also be parsed from photos at `/admin/parse-images`. Upload one or more images of a recipe (e.g. a photo of a cookbook page) and Claude will extract the name, ingredients, components, steps, and a crop of the hero photo. The parsed recipe is saved with a **Pending Approval** status so you can review it before publishing. Queue status is visible in the admin sidebar.
+Recipes can be parsed from photos at `/admin/parse-images`. Upload one or more images of a recipe (e.g. a photo of a cookbook page) and Claude will extract the name, ingredients, components, steps, and a crop of the hero photo. The parsed recipe is saved with a **Pending Approval** status so you can review it before publishing. Queue status is visible in the admin sidebar.
 
 ## Environment variables
 
@@ -58,7 +56,6 @@ Copy `.env.example` to `.env` and fill in the values:
 | `AWS_S3_SECRET` | Yes | AWS secret access key |
 | `AWS_S3_REGION` | Yes | S3 bucket region (e.g. `eu-west-2`) |
 | `AWS_S3_BUCKET` | Yes | S3 bucket name |
-| `GOODFOOD_API_URL_FORMAT` | No | URL template for BBC Good Food recipe API |
 
 \* AI parsing will fail at runtime if omitted, but the rest of the app works without it.
 

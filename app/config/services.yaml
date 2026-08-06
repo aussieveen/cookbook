@@ -9,8 +9,6 @@ parameters:
     # ponytail: fallbacks so AWS SDK and Flysystem construct without error when S3 is unconfigured
     s3.fallback.region: 'us-east-1'
     s3.fallback.bucket: 'unconfigured'
-    app.goodfood_api_url_format: "%env(GOODFOOD_API_URL_FORMAT)%"
-
 services:
     # default configuration for services in *this* file
     _defaults:
