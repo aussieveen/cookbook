@@ -240,7 +240,7 @@ class DinnerFixtures extends Fixture
             'name'      => 'Chilli Con Carne',
             'desc'      => 'Slow-cooked beef chilli with kidney beans, chipotle, and a square of dark chocolate for depth.',
             'mastered'  => false,
-            'occasions' => [MealOccasion::DINNER, MealOccasion::SUPPER],
+            'occasions' => [MealOccasion::DINNER],
             'image'     => 'fixture-chilli-con-carne.jpg',
             'components' => [
                 ['name' => null, 'ingredients' => [
@@ -265,7 +265,7 @@ class DinnerFixtures extends Fixture
             'name'      => 'Mushroom Risotto',
             'desc'      => 'Arborio rice cooked low and slow with porcini, Parmesan, and a glass of dry white wine.',
             'mastered'  => true,
-            'occasions' => [MealOccasion::DINNER, MealOccasion::SUPPER],
+            'occasions' => [MealOccasion::DINNER],
             'image'     => 'fixture-mushroom-risotto.jpg',
             'components' => [
                 ['name' => 'The risotto', 'ingredients' => [

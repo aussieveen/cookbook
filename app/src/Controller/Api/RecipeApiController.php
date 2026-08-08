@@ -53,7 +53,7 @@ class RecipeApiController extends AbstractController
         description: 'Filter by meal occasion',
         in: 'query',
         required: false,
-        schema: new OA\Schema(type: 'string', enum: ['breakfast', 'brunch', 'lunch', 'dinner', 'supper', 'snack'])
+        schema: new OA\Schema(type: 'string', enum: ['breakfast', 'lunch', 'dinner', 'baked_goods', 'staple'])
     )]
     #[OA\Parameter(
         name: 'course',
