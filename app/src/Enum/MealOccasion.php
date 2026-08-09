@@ -7,14 +7,13 @@ namespace App\Enum;
 enum MealOccasion: string
 {
     case BREAKFAST = 'breakfast';
-    case BRUNCH = 'brunch';
     case LUNCH = 'lunch';
     case DINNER = 'dinner';
-    case SUPPER = 'supper';
-    case SNACK = 'snack';
+    case BAKED_GOODS = 'baked_goods';
+    case STAPLE = 'staple';
 
     public function label(): string
     {
-        return ucfirst($this->value);
+        return ucwords(str_replace('_', ' ', $this->value));
     }
 }
