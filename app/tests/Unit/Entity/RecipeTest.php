@@ -4,12 +4,43 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Entity;
 
+use App\Entity\Component;
 use App\Entity\Recipe;
 use App\Enum\MealOccasion;
+use App\Enum\RecipeType;
 use PHPUnit\Framework\TestCase;
 
 class RecipeTest extends TestCase
 {
+    public function testDeriveTypeSetsItemWhenOneComponent(): void
+    {
+        $recipe = new Recipe();
+        $recipe->addComponent(new Component());
+        $recipe->deriveType();
+
+        $this->assertSame(RecipeType::ITEM, $recipe->getType());
+        $this->assertTrue($recipe->isItem());
+    }
+
+    public function testDeriveTypeSetsRecipeWhenMultipleComponents(): void
+    {
+        $recipe = new Recipe();
+        $recipe->addComponent(new Component());
+        $recipe->addComponent(new Component());
+        $recipe->deriveType();
+
+        $this->assertSame(RecipeType::RECIPE, $recipe->getType());
+        $this->assertFalse($recipe->isItem());
+    }
+
+    public function testDeriveTypeSetsRecipeWhenNoComponents(): void
+    {
+        $recipe = new Recipe();
+        $recipe->deriveType();
+
+        $this->assertSame(RecipeType::RECIPE, $recipe->getType());
+    }
+
     public function testSetAndGetMealOccasionsRoundTrip(): void
     {
         $recipe = new Recipe();

@@ -26,7 +26,7 @@ final class RecipeController extends AbstractController
         );
 
         return $this->render('recipe/index.html.twig', [
-            'recipes'               => $this->recipeRepository->findBy([], ['name' => 'ASC']),
+            'recipes'               => $this->recipeRepository->findAllRecipes(),
             'shoppingListRecipeIds' => $shoppingListRecipeIds,
         ]);
     }
