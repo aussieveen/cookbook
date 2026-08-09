@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Enum\Course;
 use App\Enum\MealOccasion;
+use App\Enum\RecipeType;
 use App\Repository\RecipeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -96,6 +97,10 @@ class Recipe
     #[ORM\Column(nullable: true)]
     private ?bool $needsApproval = null;
 
+    #[ORM\Column(length: 10, nullable: true, enumType: RecipeType::class)]
+    #[Groups(['recipe:summary', 'recipe:detail'])]
+    private ?RecipeType $type = null;
+
     public function __construct()
     {
         $this->steps = new ArrayCollection();
@@ -146,6 +151,13 @@ class Recipe
         if (!$this->slug && $this->name) {
             $this->slug = strtolower(str_replace(' ', '-', $this->name));
         }
+    }
+
+    #[ORM\PrePersist]
+    #[ORM\PreUpdate]
+    public function deriveType(): void
+    {
+        $this->type = $this->components->count() === 1 ? RecipeType::ITEM : RecipeType::RECIPE;
     }
 
     public function getDescription(): ?string
@@ -364,5 +376,15 @@ class Recipe
         $this->favourite = $favourite;
 
         return $this;
+    }
+
+    public function getType(): ?RecipeType
+    {
+        return $this->type;
+    }
+
+    public function isItem(): bool
+    {
+        return $this->type === RecipeType::ITEM;
     }
 }

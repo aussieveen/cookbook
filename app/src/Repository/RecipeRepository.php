@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Recipe;
 use App\Enum\Course;
 use App\Enum\MealOccasion;
+use App\Enum\RecipeType;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -22,6 +23,16 @@ class RecipeRepository extends ServiceEntityRepository
     {
         $this->getEntityManager()->persist($entity);
         $this->getEntityManager()->flush();
+    }
+
+    /** @return Recipe[] */
+    public function findAllRecipes(): array
+    {
+        return $this->createQueryBuilder('r')
+            ->where('r.type = :type OR r.type IS NULL')
+            ->setParameter('type', RecipeType::RECIPE->value)
+            ->orderBy('r.name', 'ASC')
+            ->getQuery()->getResult();
     }
 
     /**

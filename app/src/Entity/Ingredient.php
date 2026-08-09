@@ -14,7 +14,7 @@ class Ingredient
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     #[Groups(['recipe:detail'])]
     private ?string $measurement = null;
 
@@ -56,7 +56,7 @@ class Ingredient
         return $this->measurement;
     }
 
-    public function setMeasurement(string $measurement): static
+    public function setMeasurement(?string $measurement): static
     {
         $this->measurement = $measurement;
 
