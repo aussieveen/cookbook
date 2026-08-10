@@ -21,7 +21,7 @@ class IngredientSuggestionService
 {
     private const API_URL = 'https://api.anthropic.com/v1/messages';
     private const MODEL = 'claude-sonnet-4-6';
-    private const MAX_TOKENS = 4096;
+    private const MAX_TOKENS = 8192;
 
     public function __construct(
         private readonly HttpClientInterface $client,
@@ -130,6 +130,10 @@ Here is the full list of ingredient names:
 {$nameList}
 
 Identify pairs that clearly refer to the same ingredient and should be merged (e.g. "Water For The Gravy" and "Water For The Ragu" are both just water). Only suggest high-confidence pairs.
+
+In each pair, "a" must be the MORE specific or complex name (e.g. "Oil for the Breadcrumbs", "Water For The Gravy") and "b" must be the simpler, canonical name it should be merged INTO (e.g. "Oil", "Water"). The merge will replace "a" with "b".
+
+If multiple specific names all refer to the same canonical ingredient (e.g. "Sugar For The Pickle", "Sugar For The Dressing", "Sugar for the Onions" all map to "Sugar"), every one of them must have "b" set to that single canonical name — do NOT chain them to each other.
 
 TASK 2 — CATEGORY SUGGESTIONS
 Here are ingredient names that currently have no category:

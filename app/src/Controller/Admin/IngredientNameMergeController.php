@@ -36,7 +36,7 @@ class IngredientNameMergeController extends AbstractController
         $fromName = null;
         $toName = null;
 
-        // Pre-fill selects from query params (used by AI suggestion quick-links)
+        // Pre-fill selects from query params (used as fallback for direct URL links)
         $preFrom = (int) $request->query->get('from_id', 0);
         $preTo = (int) $request->query->get('to_id', 0);
 

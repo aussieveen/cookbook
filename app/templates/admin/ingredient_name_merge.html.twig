@@ -17,11 +17,14 @@
                             <strong>{{ suggestion.nameB.name }}</strong>
                         </span>
                         <span class="d-flex gap-2">
-                    <a href="{{ path('admin_ingredient_name_merge', {from_id: suggestion.nameA.id, to_id: suggestion.nameB.id}) }}"
-                               class="btn btn-sm btn-outline-primary">Merge →</a>
-                            <form method="post" action="{{ path('admin_ingredient_name_merge_dismiss_suggestion', {id: suggestion.id}) }}">
-                                <button type="submit" class="btn btn-sm btn-outline-secondary">Dismiss</button>
+                    <form method="post" action="{{ path('admin_ingredient_name_merge') }}">
+                        <input type="hidden" name="from_id" value="{{ suggestion.nameA.id }}">
+                        <input type="hidden" name="to_id" value="{{ suggestion.nameB.id }}">
+                        <button type="submit" name="action" value="preview" class="btn btn-sm btn-outline-primary">Merge →</button>
                             </form>
+                    <form method="post" action="{{ path('admin_ingredient_name_merge_dismiss_suggestion', {id: suggestion.id}) }}">
+                        <button type="submit" class="btn btn-sm btn-outline-secondary">Dismiss</button>
+                    </form>
                         </span>
                     </li>
                 {% endfor %}
