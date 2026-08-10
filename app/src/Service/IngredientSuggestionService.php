@@ -59,6 +59,7 @@ class IngredientSuggestionService
                 'anthropic-version' => '2023-06-01',
                 'content-type' => 'application/json',
             ],
+            'timeout' => 120,
             'json' => [
                 'model' => self::MODEL,
                 'max_tokens' => self::MAX_TOKENS,

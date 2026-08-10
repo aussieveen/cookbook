@@ -6,6 +6,8 @@ namespace App\Controller\Admin;
 
 use App\Entity\IngredientName;
 use App\Enum\IngredientCategory;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
@@ -27,6 +29,11 @@ class IngredientNameCrudController extends AbstractCrudController
             ->setDefaultSort(['name' => 'ASC'])
             ->overrideTemplate('crud/index', 'admin/ingredient_name_index.html.twig')
             ->overrideTemplate('crud/detail', 'admin/ingredient_name_detail.html.twig');
+    }
+
+    public function configureActions(Actions $actions): Actions
+    {
+        return $actions->add(Crud::PAGE_INDEX, Action::DETAIL);
     }
 
     /** @SuppressWarnings(PHPMD.UnusedFormalParameter) */
