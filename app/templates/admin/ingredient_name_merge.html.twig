@@ -3,6 +3,32 @@
 {% block content_title %}Merge Ingredient Names{% endblock %}
 
 {% block main %}
+    {% if suggestions is not empty %}
+        <div class="card mb-4 border-warning">
+            <div class="card-header bg-warning bg-opacity-25 fw-semibold">
+                AI Merge Suggestions <span class="badge bg-warning text-dark">{{ suggestions|length }}</span>
+            </div>
+            <ul class="list-group list-group-flush">
+                {% for suggestion in suggestions %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>
+                            <strong>{{ suggestion.nameA.name }}</strong>
+                            <span class="text-muted mx-2">→</span>
+                            <strong>{{ suggestion.nameB.name }}</strong>
+                        </span>
+                        <span class="d-flex gap-2">
+                    <a href="{{ path('admin_ingredient_name_merge', {from_id: suggestion.nameA.id, to_id: suggestion.nameB.id}) }}"
+                               class="btn btn-sm btn-outline-primary">Merge →</a>
+                            <form method="post" action="{{ path('admin_ingredient_name_merge_dismiss_suggestion', {id: suggestion.id}) }}">
+                                <button type="submit" class="btn btn-sm btn-outline-secondary">Dismiss</button>
+                            </form>
+                        </span>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+
     <p class="help-block mb-3">
         Select the name to <strong>replace</strong> and the name to <strong>keep</strong>.
         All recipes using the replaced name will be updated to use the kept name.
@@ -16,7 +42,7 @@
                 <select name="from_id" id="from_id" class="form-select" required>
                     <option value="">— select —</option>
                     {% for name in allNames %}
-                        <option value="{{ name.id }}">{{ name.name }}</option>
+                        <option value="{{ name.id }}" {{ preFrom == name.id ? 'selected' }}>{{ name.name }}</option>
                     {% endfor %}
                 </select>
             </div>
@@ -25,7 +51,7 @@
                 <select name="to_id" id="to_id" class="form-select" required>
                     <option value="">— select —</option>
                     {% for name in allNames %}
-                        <option value="{{ name.id }}">{{ name.name }}</option>
+                        <option value="{{ name.id }}" {{ preTo == name.id ? 'selected' }}>{{ name.name }}</option>
                     {% endfor %}
                 </select>
             </div>

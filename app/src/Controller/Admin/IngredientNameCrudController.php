@@ -24,7 +24,9 @@ class IngredientNameCrudController extends AbstractCrudController
         return $crud
             ->setEntityLabelInSingular('Ingredient Name')
             ->setEntityLabelInPlural('Ingredient Names')
-            ->setDefaultSort(['name' => 'ASC']);
+            ->setDefaultSort(['name' => 'ASC'])
+            ->overrideTemplate('crud/index', 'admin/ingredient_name_index.html.twig')
+            ->overrideTemplate('crud/detail', 'admin/ingredient_name_detail.html.twig');
     }
 
     /** @SuppressWarnings(PHPMD.UnusedFormalParameter) */

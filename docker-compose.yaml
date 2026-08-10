@@ -32,7 +32,7 @@ services:
         - db_data:/var/lib/mysql:rw
   worker:
     image: cookbook-app:local
-    command: php bin/console messenger:consume async failed --time-limit=3600 --failure-limit=5
+    command: php bin/console messenger:consume async failed scheduler_default --time-limit=3600 --failure-limit=5
     restart: unless-stopped
     environment:
       OPCACHE_VALIDATE_TIMESTAMPS: 1
