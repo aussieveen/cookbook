@@ -157,7 +157,10 @@ class Recipe
     #[ORM\PreUpdate]
     public function deriveType(): void
     {
-        $this->type = $this->components->count() === 1 ? RecipeType::ITEM : RecipeType::RECIPE;
+        $components = $this->components;
+        $this->type = $components->count() === 1 && $components->first()->getIngredients()->count() === 1
+            ? RecipeType::ITEM
+            : RecipeType::RECIPE;
     }
 
     public function getDescription(): ?string
