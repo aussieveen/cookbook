@@ -1,0 +1,33 @@
+{% extends '@EasyAdmin/crud/index.html.twig' %}
+
+{% block main %}
+    {% set suggestions = pending_category_suggestions() %}
+    {% if suggestions is not empty %}
+        <div class="card mb-4 border-warning">
+            <div class="card-header bg-warning bg-opacity-25 fw-semibold">
+                AI Category Suggestions <span class="badge bg-warning text-dark">{{ suggestions|length }}</span>
+            </div>
+            <ul class="list-group list-group-flush">
+                {% for suggestion in suggestions %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>
+                            <strong>{{ suggestion.ingredientName.name }}</strong>
+                            <span class="text-muted mx-2">→</span>
+                            <span class="badge bg-secondary">{{ suggestion.suggestedCategory.label() }}</span>
+                        </span>
+                        <span class="d-flex gap-2">
+                            <form method="post" action="{{ path('admin_ingredient_category_suggestion_apply', {id: suggestion.id}) }}">
+                                <button type="submit" class="btn btn-sm btn-outline-success">Apply</button>
+                            </form>
+                            <form method="post" action="{{ path('admin_ingredient_category_suggestion_dismiss', {id: suggestion.id}) }}">
+                                <button type="submit" class="btn btn-sm btn-outline-secondary">Dismiss</button>
+                            </form>
+                        </span>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+
+    {{ parent() }}
+{% endblock %}

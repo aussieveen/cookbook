@@ -1,0 +1,17 @@
+{% extends '@EasyAdmin/crud/detail.html.twig' %}
+
+{% block main %}
+    {{ parent() }}
+
+    {% set recipes = ea.entity.instance | recipes_for_ingredient_name %}
+    {% if recipes is not empty %}
+        <div class="card mt-4">
+            <div class="card-header fw-semibold">Used in Recipes</div>
+            <ul class="list-group list-group-flush">
+                {% for recipe in recipes %}
+                    <li class="list-group-item">{{ recipe.name }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+{% endblock %}

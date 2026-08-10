@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controller\Admin;
 
 use App\Entity\IngredientName;
+use App\Repository\IngredientMergeSuggestionRepository;
 use App\Repository\IngredientNameRepository;
 use App\Repository\IngredientRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -21,6 +22,7 @@ class IngredientNameMergeController extends AbstractController
     public function __construct(
         private readonly IngredientNameRepository $ingredientNameRepository,
         private readonly IngredientRepository $ingredientRepository,
+        private readonly IngredientMergeSuggestionRepository $mergeSuggestionRepository,
         private readonly EntityManagerInterface $entityManager,
     ) {
     }
@@ -33,6 +35,10 @@ class IngredientNameMergeController extends AbstractController
         $preview = null;
         $fromName = null;
         $toName = null;
+
+        // Pre-fill selects from query params (used by AI suggestion quick-links)
+        $preFrom = (int) $request->query->get('from_id', 0);
+        $preTo = (int) $request->query->get('to_id', 0);
 
         if ($request->isMethod('POST')) {
             $fromId = (int) $request->request->get('from_id');
@@ -78,11 +84,26 @@ class IngredientNameMergeController extends AbstractController
             'fromName' => $fromName,
             'toName' => $toName,
             'preview' => $preview,
+            'preFrom' => $preFrom,
+            'preTo' => $preTo,
+            'suggestions' => $this->mergeSuggestionRepository->findPending(),
             'csrfToken' => $this->container
                 ->get('security.csrf.token_manager')
                 ->getToken('ingredient_merge')
                 ->getValue(),
         ]);
+    }
+
+    #[Route('/dismiss-suggestion/{id}', name: '_dismiss_suggestion', methods: ['POST'])]
+    public function dismissSuggestion(int $id): Response
+    {
+        $suggestion = $this->mergeSuggestionRepository->find($id);
+        if ($suggestion !== null) {
+            $suggestion->dismiss();
+            $this->entityManager->flush();
+        }
+
+        return $this->redirectToRoute('admin_ingredient_name_merge');
     }
 
     /** @param array<string,string> $notes @param array<string,string> $measurements */

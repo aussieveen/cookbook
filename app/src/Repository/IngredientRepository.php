@@ -35,4 +35,18 @@ class IngredientRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    /** @return array<int, array{id: int, name: string}> */
+    public function findRecipesByIngredientName(IngredientName $ingredientName): array
+    {
+        return $this->createQueryBuilder('i')
+            ->select('DISTINCT r.id, r.name')
+            ->join('i.component', 'c')
+            ->join('c.recipe', 'r')
+            ->where('i.ingredientName = :name')
+            ->setParameter('name', $ingredientName)
+            ->orderBy('r.name', 'ASC')
+            ->getQuery()
+            ->getArrayResult();
+    }
 }
