@@ -12,14 +12,31 @@ use PHPUnit\Framework\TestCase;
 
 class RecipeTest extends TestCase
 {
-    public function testDeriveTypeSetsItemWhenOneComponent(): void
+    public function testDeriveTypeSetsItemWhenOneComponentAndOneIngredient(): void
     {
+        $component = new Component();
+        $component->addIngredient(new \App\Entity\Ingredient());
+
         $recipe = new Recipe();
-        $recipe->addComponent(new Component());
+        $recipe->addComponent($component);
         $recipe->deriveType();
 
         $this->assertSame(RecipeType::ITEM, $recipe->getType());
         $this->assertTrue($recipe->isItem());
+    }
+
+    public function testDeriveTypeSetsRecipeWhenOneComponentWithMultipleIngredients(): void
+    {
+        $component = new Component();
+        $component->addIngredient(new \App\Entity\Ingredient());
+        $component->addIngredient(new \App\Entity\Ingredient());
+
+        $recipe = new Recipe();
+        $recipe->addComponent($component);
+        $recipe->deriveType();
+
+        $this->assertSame(RecipeType::RECIPE, $recipe->getType());
+        $this->assertFalse($recipe->isItem());
     }
 
     public function testDeriveTypeSetsRecipeWhenMultipleComponents(): void
