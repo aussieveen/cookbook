@@ -6,6 +6,8 @@ namespace App\Controller\Admin;
 
 use App\Repository\IngredientCategorySuggestionRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
+use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -16,7 +18,18 @@ class IngredientCategorySuggestionController extends AbstractController
     public function __construct(
         private readonly IngredientCategorySuggestionRepository $repository,
         private readonly EntityManagerInterface $entityManager,
+        private readonly AdminUrlGeneratorInterface $adminUrlGenerator,
     ) {
+    }
+
+    private function redirectToIngredientNames(): Response
+    {
+        $url = $this->adminUrlGenerator
+            ->setController(IngredientNameCrudController::class)
+            ->setAction(Action::INDEX)
+            ->generateUrl();
+
+        return $this->redirect($url);
     }
 
     #[Route('/apply/{id}', name: '_apply', methods: ['POST'])]
@@ -35,10 +48,7 @@ class IngredientCategorySuggestionController extends AbstractController
             ));
         }
 
-        return $this->redirectToRoute('admin', [
-            'crudControllerFqcn' => IngredientNameCrudController::class,
-            'crudAction' => 'index',
-        ]);
+        return $this->redirectToIngredientNames();
     }
 
     #[Route('/dismiss/{id}', name: '_dismiss', methods: ['POST'])]
@@ -51,9 +61,6 @@ class IngredientCategorySuggestionController extends AbstractController
             $this->entityManager->flush();
         }
 
-        return $this->redirectToRoute('admin', [
-            'crudControllerFqcn' => IngredientNameCrudController::class,
-            'crudAction' => 'index',
-        ]);
+        return $this->redirectToIngredientNames();
     }
 }
