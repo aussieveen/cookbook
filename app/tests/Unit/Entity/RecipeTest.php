@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Entity;
 
 use App\Entity\Component;
+use App\Entity\Ingredient;
 use App\Entity\Recipe;
 use App\Enum\MealOccasion;
 use App\Enum\RecipeType;
@@ -15,7 +16,7 @@ class RecipeTest extends TestCase
     public function testDeriveTypeSetsItemWhenOneComponentAndOneIngredient(): void
     {
         $component = new Component();
-        $component->addIngredient(new \App\Entity\Ingredient());
+        $component->addIngredient(new Ingredient());
 
         $recipe = new Recipe();
         $recipe->addComponent($component);
@@ -28,8 +29,8 @@ class RecipeTest extends TestCase
     public function testDeriveTypeSetsRecipeWhenOneComponentWithMultipleIngredients(): void
     {
         $component = new Component();
-        $component->addIngredient(new \App\Entity\Ingredient());
-        $component->addIngredient(new \App\Entity\Ingredient());
+        $component->addIngredient(new Ingredient());
+        $component->addIngredient(new Ingredient());
 
         $recipe = new Recipe();
         $recipe->addComponent($component);
