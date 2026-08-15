@@ -7,7 +7,7 @@ namespace App\Tests\Unit\Entity;
 use App\Entity\Component;
 use App\Entity\Ingredient;
 use App\Entity\Recipe;
-use App\Enum\MealOccasion;
+use App\Enum\RecipeCategory;
 use App\Enum\RecipeType;
 use PHPUnit\Framework\TestCase;
 
@@ -59,21 +59,21 @@ class RecipeTest extends TestCase
         $this->assertSame(RecipeType::RECIPE, $recipe->getType());
     }
 
-    public function testSetAndGetMealOccasionsRoundTrip(): void
+    public function testSetAndGetRecipeCategoriesRoundTrip(): void
     {
         $recipe = new Recipe();
-        $recipe->setMealOccasions([MealOccasion::DINNER, MealOccasion::LUNCH]);
+        $recipe->setRecipeCategories([RecipeCategory::DINNER, RecipeCategory::LUNCH]);
 
-        $this->assertSame([MealOccasion::DINNER, MealOccasion::LUNCH], $recipe->getMealOccasions());
+        $this->assertSame([RecipeCategory::DINNER, RecipeCategory::LUNCH], $recipe->getRecipeCategories());
     }
 
-    public function testSetMealOccasionsStoresStrings(): void
+    public function testSetRecipeCategoriesStoresStrings(): void
     {
         $recipe = new Recipe();
-        $recipe->setMealOccasions([MealOccasion::BREAKFAST]);
+        $recipe->setRecipeCategories([RecipeCategory::BREAKFAST]);
 
         // Internal storage is strings — serializer and Doctrine JSON column read raw array
-        $raw = (fn() => $this->mealOccasions)->call($recipe);
+        $raw = (fn() => $this->recipeCategories)->call($recipe);
         $this->assertSame(['breakfast'], $raw);
     }
 

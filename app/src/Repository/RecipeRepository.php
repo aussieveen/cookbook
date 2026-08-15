@@ -4,7 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Recipe;
 use App\Enum\Course;
-use App\Enum\MealOccasion;
+use App\Enum\RecipeCategory;
 use App\Enum\RecipeType;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -36,10 +36,32 @@ class RecipeRepository extends ServiceEntityRepository
     }
 
     /**
-     * Search recipes by optional filters.
-     * @param string[] $ingredientNames
+     * Find all recipes with optional AND-logic filters by Course and RecipeCategory.
+     *
+     * @param Course[]          $courses
+     * @param RecipeCategory[]  $categories
      * @return Recipe[]
      */
+    public function findFiltered(array $courses = [], array $categories = []): array
+    {
+        $qb = $this->createQueryBuilder('r')
+            ->where('r.type = :type OR r.type IS NULL')
+            ->setParameter('type', RecipeType::RECIPE->value);
+
+        if ($courses !== []) {
+            $qb->andWhere('r.course IN (:courses)')
+               ->setParameter('courses', array_map(fn(Course $c) => $c->value, $courses));
+        }
+
+        // ponytail: LIKE on JSON per value; AND logic via chained andWhere; safe for controlled enum values
+        foreach ($categories as $i => $category) {
+            $qb->andWhere("r.recipeCategories LIKE :cat{$i}")
+               ->setParameter("cat{$i}", '%"' . $category->value . '"%');
+        }
+
+        return $qb->orderBy('r.name', 'ASC')->getQuery()->getResult();
+    }
+
     /**
      * @param string[] $ingredientNames
      * @param int[]    $excludeIds
@@ -47,7 +69,7 @@ class RecipeRepository extends ServiceEntityRepository
      */
     public function search(
         array $ingredientNames = [],
-        ?MealOccasion $mealOccasion = null,
+        ?RecipeCategory $recipeCategory = null,
         ?Course $course = null,
         ?string $nameQuery = null,
         array $excludeIds = [],
@@ -77,9 +99,9 @@ class RecipeRepository extends ServiceEntityRepository
         }
 
         // ponytail: LIKE on JSON; safe for controlled enum values, avoids custom DQL function registration
-        if ($mealOccasion !== null) {
-            $qb->andWhere("r.mealOccasions LIKE :occasion")
-               ->setParameter('occasion', '%"' . $mealOccasion->value . '"%');
+        if ($recipeCategory !== null) {
+            $qb->andWhere("r.recipeCategories LIKE :category")
+               ->setParameter('category', '%"' . $recipeCategory->value . '"%');
         }
 
         if ($excludeIds !== []) {

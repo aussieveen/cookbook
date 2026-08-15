@@ -10,7 +10,7 @@ use App\Entity\IngredientName;
 use App\Entity\Recipe;
 use App\Entity\Step;
 use App\Enum\Course;
-use App\Enum\MealOccasion;
+use App\Enum\RecipeCategory;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -49,12 +49,12 @@ class RecipeApiControllerTest extends WebTestCase
         $this->assertSame('Roast Lamb', $data[0]['name']);
     }
 
-    public function testIndexFiltersByMealOccasion(): void
+    public function testIndexFiltersByRecipeCategory(): void
     {
-        $this->seedRecipe('Pancakes', mealOccasions: [MealOccasion::BREAKFAST]);
-        $this->seedRecipe('Steak', mealOccasions: [MealOccasion::DINNER]);
+        $this->seedRecipe('Pancakes', recipeCategories: [RecipeCategory::BREAKFAST]);
+        $this->seedRecipe('Steak', recipeCategories: [RecipeCategory::DINNER]);
 
-        $this->client->request('GET', '/api/v1/recipes?meal_occasion=breakfast');
+        $this->client->request('GET', '/api/v1/recipes?recipe_category=breakfast');
         $data = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertCount(1, $data);
@@ -84,7 +84,7 @@ class RecipeApiControllerTest extends WebTestCase
         $this->assertArrayHasKey('name', $data[0]);
         $this->assertArrayHasKey('slug', $data[0]);
         $this->assertArrayHasKey('course', $data[0]);
-        $this->assertArrayHasKey('mealOccasions', $data[0]);
+        $this->assertArrayHasKey('recipeCategories', $data[0]);
         $this->assertArrayHasKey('mastered', $data[0]);
         $this->assertArrayNotHasKey('description', $data[0]);
         $this->assertArrayNotHasKey('components', $data[0]);
@@ -140,13 +140,13 @@ class RecipeApiControllerTest extends WebTestCase
     private function seedRecipe(
         string $name,
         ?Course $course = null,
-        array $mealOccasions = [],
+        array $recipeCategories = [],
         ?string $ingredientName = null,
     ): Recipe {
         $recipe = new Recipe();
         $recipe->setName($name);
         $recipe->setCourse($course);
-        $recipe->setMealOccasions($mealOccasions);
+        $recipe->setRecipeCategories($recipeCategories);
 
         if ($ingredientName !== null) {
             $iname = new IngredientName();

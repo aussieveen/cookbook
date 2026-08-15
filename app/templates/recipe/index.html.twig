@@ -4,10 +4,49 @@
 
 {% block body %}
     <div class="container bg-dark">
-        <h1 class="text-center text-light">Cookbook</h1>
-        <div class="text-end mb-3">
-            <a href="{{ path('shopping_list_index') }}" class="btn btn-outline-light">View Shopping List</a>
+        <div class="d-flex justify-content-between align-items-center pt-3 pb-2">
+            <h1 class="text-light mb-0">Cookbook</h1>
+            <div class="d-flex gap-2">
+                <a href="{{ path('shopping_list_index') }}" class="btn btn-outline-light btn-sm">Shopping List</a>
+                <a href="/admin" class="btn btn-outline-secondary btn-sm">Admin ↗</a>
+            </div>
         </div>
+
+        {# Filter bar #}
+        <div class="mb-4">
+            <div class="row g-2">
+                <div class="col-12">
+                    <span class="text-light fw-semibold small me-2">Course</span>
+                    {% for course in allCourses %}
+                        {% set newCourses = course.value in selectedCourses
+                            ? selectedCourses|filter(v => v != course.value)
+                            : selectedCourses|merge([course.value]) %}
+                        <a href="{{ path('home', {'courses[]': newCourses, 'categories[]': selectedCategories}) }}"
+                           class="btn btn-sm me-1 {{ course.value in selectedCourses ? 'btn-primary' : 'btn-outline-light' }}">
+                            {{ course.label() }}
+                        </a>
+                    {% endfor %}
+                </div>
+                <div class="col-12">
+                    <span class="text-light fw-semibold small me-2">Category</span>
+                    {% for category in allCategories %}
+                        {% set newCategories = category.value in selectedCategories
+                            ? selectedCategories|filter(v => v != category.value)
+                            : selectedCategories|merge([category.value]) %}
+                        <a href="{{ path('home', {'courses[]': selectedCourses, 'categories[]': newCategories}) }}"
+                           class="btn btn-sm me-1 {{ category.value in selectedCategories ? 'btn-primary' : 'btn-outline-light' }}">
+                            {{ category.label() }}
+                        </a>
+                    {% endfor %}
+                </div>
+                {% if selectedCourses|length > 0 or selectedCategories|length > 0 %}
+                    <div class="col-12">
+                        <a href="{{ path('home') }}" class="btn btn-sm btn-outline-danger">Clear filters</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
         <div class="row row row-cols-1 row-cols-md-3 g-4">
         {% for recipe in recipes %}
             <div class="col h-100">
@@ -42,8 +81,9 @@
             </div>
             </div>
         {% else %}
-            <p>No recipes found.</p>
+            <p class="text-light">No recipes found.</p>
         {% endfor %}
         </div>
     </div>
 {% endblock %}
+
