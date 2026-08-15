@@ -3,7 +3,7 @@
 namespace App\Entity;
 
 use App\Enum\Course;
-use App\Enum\MealOccasion;
+use App\Enum\RecipeCategory;
 use App\Enum\RecipeType;
 use App\Repository\RecipeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -61,9 +61,9 @@ class Recipe
     private ?Course $course = null;
 
     /** @var string[] */
-    #[ORM\Column(type: Types::JSON, nullable: true)]
+    #[ORM\Column(name: 'recipe_categories', type: Types::JSON, nullable: true)]
     #[Groups(['recipe:summary', 'recipe:detail'])]
-    private array $mealOccasions = [];
+    private array $recipeCategories = [];
 
     /**
      * @var Collection<int, Component>
@@ -303,17 +303,17 @@ class Recipe
         return $this;
     }
 
-    /** @return MealOccasion[] */
+    /** @return RecipeCategory[] */
     /** @SuppressWarnings(PHPMD.StaticAccess) ponytail: BackedEnum::from() has no non-static equivalent */
-    public function getMealOccasions(): array
+    public function getRecipeCategories(): array
     {
-        return array_map(MealOccasion::from(...), $this->mealOccasions);
+        return array_map(RecipeCategory::from(...), $this->recipeCategories);
     }
 
-    /** @param MealOccasion[] $mealOccasions */
-    public function setMealOccasions(array $mealOccasions): static
+    /** @param RecipeCategory[] $recipeCategories */
+    public function setRecipeCategories(array $recipeCategories): static
     {
-        $this->mealOccasions = array_map(fn(MealOccasion $o) => $o->value, $mealOccasions);
+        $this->recipeCategories = array_map(fn(RecipeCategory $o) => $o->value, $recipeCategories);
 
         return $this;
     }

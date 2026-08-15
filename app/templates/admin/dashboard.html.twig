@@ -1,3 +1,67 @@
 {% extends '@EasyAdmin/layout.html.twig' %}
 {% block main %}
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-md-3">
+        <div class="card text-center shadow-sm">
+            <div class="card-body">
+                <h2 class="display-6 fw-bold">{{ stats.total }}</h2>
+                <p class="text-muted mb-0">Total Recipes</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-md-3">
+        <div class="card text-center shadow-sm border-success">
+            <div class="card-body">
+                <h2 class="display-6 fw-bold text-success">{{ stats.mastered }}</h2>
+                <p class="text-muted mb-0">Mastered</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-md-3">
+        <div class="card text-center shadow-sm border-warning">
+            <div class="card-body">
+                <h2 class="display-6 fw-bold text-warning">{{ stats.favourites }}</h2>
+                <p class="text-muted mb-0">Favourites</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-md-3">
+        <div class="card text-center shadow-sm border-danger">
+            <div class="card-body">
+                <h2 class="display-6 fw-bold text-danger">{{ stats.pendingApproval }}</h2>
+                <p class="text-muted mb-0">Pending Approval</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header fw-semibold">By Course</div>
+            <ul class="list-group list-group-flush">
+                {% for label, count in byCourse %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        {{ label }}
+                        <span class="badge bg-primary rounded-pill">{{ count }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header fw-semibold">By Category</div>
+            <ul class="list-group list-group-flush">
+                {% for label, count in byCategory %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        {{ label }}
+                        <span class="badge bg-secondary rounded-pill">{{ count }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
 {% endblock main %}
+

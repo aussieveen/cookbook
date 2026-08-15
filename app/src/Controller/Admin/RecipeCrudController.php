@@ -6,7 +6,7 @@ namespace App\Controller\Admin;
 
 use App\Entity\Recipe;
 use App\Enum\Course;
-use App\Enum\MealOccasion;
+use App\Enum\RecipeCategory;
 use App\Repository\RecipeRepository;
 use App\Service\ImageUploader;
 use App\Service\StorageUrlResolver;
@@ -76,10 +76,10 @@ class RecipeCrudController extends AbstractCrudController
                 ))
                 ->allowMultipleChoices(false)
                 ->renderExpanded(false),
-            ChoiceField::new('mealOccasions', 'Meal Occasions')
+            ChoiceField::new('recipeCategories', 'Recipe Categories')
                 ->setChoices(array_combine(
-                    array_map(fn(MealOccasion $o) => $o->label(), MealOccasion::cases()),
-                    MealOccasion::cases()
+                    array_map(fn(RecipeCategory $o) => $o->label(), RecipeCategory::cases()),
+                    RecipeCategory::cases()
                 ))
                 ->allowMultipleChoices()
                 ->renderExpanded(false)

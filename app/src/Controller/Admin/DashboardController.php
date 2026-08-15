@@ -2,6 +2,8 @@
 
 namespace App\Controller\Admin;
 
+use App\Enum\Course;
+use App\Enum\RecipeCategory;
 use App\Repository\IngredientCategorySuggestionRepository;
 use App\Repository\IngredientMergeSuggestionRepository;
 use App\Repository\RecipeRepository;
@@ -25,7 +27,33 @@ class DashboardController extends AbstractDashboardController
 
     public function index(): Response
     {
-        return $this->render('admin/dashboard.html.twig');
+        $allRecipes = $this->recipeRepository->findAllRecipes();
+
+        $stats = [
+            'total'           => count($allRecipes),
+            'mastered'        => count(array_filter($allRecipes, fn($r) => $r->isMastered())),
+            'favourites'      => count(array_filter($allRecipes, fn($r) => $r->isFavourite())),
+            'pendingApproval' => $this->recipeRepository->count(['needsApproval' => true]),
+        ];
+
+        $byCourse = [];
+        foreach (Course::cases() as $course) {
+            $byCourse[$course->label()] = count(array_filter($allRecipes, fn($r) => $r->getCourse() === $course));
+        }
+
+        $byCategory = [];
+        foreach (RecipeCategory::cases() as $category) {
+            $byCategory[$category->label()] = count(array_filter(
+                $allRecipes,
+                fn($r) => in_array($category, $r->getRecipeCategories(), true)
+            ));
+        }
+
+        return $this->render('admin/dashboard.html.twig', [
+            'stats'      => $stats,
+            'byCourse'   => $byCourse,
+            'byCategory' => $byCategory,
+        ]);
     }
 
     public function configureAssets(): Assets
@@ -47,6 +75,7 @@ class DashboardController extends AbstractDashboardController
         $categorySuggestions = $this->categorySuggestionRepository->countPending();
 
         yield MenuItem::linkToUrl('Dashboard', 'fa fa-home', '/admin');
+        yield MenuItem::linkToUrl('← Back to Cookbook', 'fa fa-arrow-left', '/');
         yield MenuItem::linkTo(RecipeCrudController::class, 'Recipe', 'fas fa-rectangle-list');
 
         if ($pendingCount > 0) {

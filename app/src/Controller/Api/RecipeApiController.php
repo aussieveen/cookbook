@@ -6,7 +6,7 @@ namespace App\Controller\Api;
 
 use App\Entity\Recipe;
 use App\Enum\Course;
-use App\Enum\MealOccasion;
+use App\Enum\RecipeCategory;
 use App\Repository\RecipeRepository;
 use BackedEnum;
 use Doctrine\ORM\EntityManagerInterface;
@@ -49,11 +49,14 @@ class RecipeApiController extends AbstractController
         schema: new OA\Schema(type: 'array', items: new OA\Items(type: 'string'))
     )]
     #[OA\Parameter(
-        name: 'meal_occasion',
-        description: 'Filter by meal occasion',
+        name: 'recipe_category',
+        description: 'Filter by recipe category',
         in: 'query',
         required: false,
-        schema: new OA\Schema(type: 'string', enum: ['breakfast', 'lunch', 'dinner', 'baked_goods', 'staple'])
+        schema: new OA\Schema(
+            type: 'string',
+            enum: ['breakfast', 'lunch', 'dinner', 'baked_goods', 'staple', 'sauces_and_marinades', 'for_leo']
+        )
     )]
     #[OA\Parameter(
         name: 'course',
@@ -82,13 +85,13 @@ class RecipeApiController extends AbstractController
     )]
     public function index(Request $request): JsonResponse
     {
-        $ingredientNames = $request->query->all('ingredients');
-        $nameQuery       = $request->query->getString('q') ?: null;
-        $mealOccasion    = $this->enumFromQuery($request, 'meal_occasion', MealOccasion::class);
-        $course          = $this->enumFromQuery($request, 'course', Course::class);
-        $excludeIds      = array_map('intval', $request->query->all('exclude_ids'));
+        $ingredientNames  = $request->query->all('ingredients');
+        $nameQuery        = $request->query->getString('q') ?: null;
+        $recipeCategory   = $this->enumFromQuery($request, 'recipe_category', RecipeCategory::class);
+        $course           = $this->enumFromQuery($request, 'course', Course::class);
+        $excludeIds       = array_map('intval', $request->query->all('exclude_ids'));
 
-        $recipes = $this->recipeRepository->search($ingredientNames, $mealOccasion, $course, $nameQuery, $excludeIds);
+        $recipes = $this->recipeRepository->search($ingredientNames, $recipeCategory, $course, $nameQuery, $excludeIds);
 
         return $this->json($recipes, context: ['groups' => ['recipe:summary']]);
     }

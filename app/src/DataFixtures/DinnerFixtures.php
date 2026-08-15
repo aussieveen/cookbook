@@ -10,7 +10,7 @@ use App\Entity\IngredientName;
 use App\Entity\Recipe;
 use App\Entity\Step;
 use App\Enum\Course;
-use App\Enum\MealOccasion;
+use App\Enum\RecipeCategory;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
@@ -150,7 +150,7 @@ class DinnerFixtures extends Fixture
             'name'      => 'Spaghetti Bolognese',
             'desc'      => 'A slow-cooked meat ragu with soffritto, red wine, and a splash of milk — proper Sunday sauce.',
             'mastered'  => true,
-            'occasions' => [MealOccasion::DINNER],
+            'occasions' => [RecipeCategory::DINNER],
             'image'     => 'fixture-spaghetti-bolognese.jpg',
             'components' => [
                 ['name' => 'The ragu', 'ingredients' => [
@@ -179,7 +179,7 @@ class DinnerFixtures extends Fixture
             'name'      => 'Chicken Tikka Masala',
             'desc'      => 'Marinated, charred chicken tikka simmered in a creamy tomato and spiced yoghurt sauce.',
             'mastered'  => true,
-            'occasions' => [MealOccasion::DINNER],
+            'occasions' => [RecipeCategory::DINNER],
             'image'     => 'fixture-chicken-tikka-masala.jpg',
             'components' => [
                 ['name' => 'For the chicken tikka', 'ingredients' => [
@@ -208,7 +208,7 @@ class DinnerFixtures extends Fixture
             'name'      => 'Beef Lasagne',
             'desc'      => 'Rich bolognese layered with silky bechamel and fresh pasta, baked until bubbling.',
             'mastered'  => false,
-            'occasions' => [MealOccasion::DINNER],
+            'occasions' => [RecipeCategory::DINNER],
             'image'     => 'fixture-beef-lasagne.jpg',
             'components' => [
                 ['name' => 'Bolognese layer', 'ingredients' => [
@@ -240,7 +240,7 @@ class DinnerFixtures extends Fixture
             'name'      => 'Chilli Con Carne',
             'desc'      => 'Slow-cooked beef chilli with kidney beans, chipotle, and a square of dark chocolate for depth.',
             'mastered'  => false,
-            'occasions' => [MealOccasion::DINNER],
+            'occasions' => [RecipeCategory::DINNER],
             'image'     => 'fixture-chilli-con-carne.jpg',
             'components' => [
                 ['name' => null, 'ingredients' => [
@@ -265,7 +265,7 @@ class DinnerFixtures extends Fixture
             'name'      => 'Mushroom Risotto',
             'desc'      => 'Arborio rice cooked low and slow with porcini, Parmesan, and a glass of dry white wine.',
             'mastered'  => true,
-            'occasions' => [MealOccasion::DINNER],
+            'occasions' => [RecipeCategory::DINNER],
             'image'     => 'fixture-mushroom-risotto.jpg',
             'components' => [
                 ['name' => 'The risotto', 'ingredients' => [
@@ -415,7 +415,7 @@ class DinnerFixtures extends Fixture
         $sidesByName = [];
 
         foreach (self::SIDES as $name => $data) {
-            $recipe = $this->makeRecipe($name, $data['desc'], Course::SIDE, [MealOccasion::DINNER], null, $data['image']);
+            $recipe = $this->makeRecipe($name, $data['desc'], Course::SIDE, [RecipeCategory::DINNER], null, $data['image']);
             $this->addComponents($recipe, $data['components'], $manager);
             $this->addSteps($recipe, $data['steps']);
             $sidesByName[$name] = $recipe;
@@ -430,7 +430,7 @@ class DinnerFixtures extends Fixture
         }
 
         foreach (self::PAIRED_MAINS as $data) {
-            $recipe = $this->makeRecipe($data['name'], $data['desc'], Course::MAIN, [MealOccasion::DINNER], $data['mastered'], $data['image']);
+            $recipe = $this->makeRecipe($data['name'], $data['desc'], Course::MAIN, [RecipeCategory::DINNER], $data['mastered'], $data['image']);
             $this->addComponents($recipe, $data['components'], $manager);
             $this->addSteps($recipe, $data['steps']);
             foreach ($data['sides'] as $sideName) {
@@ -442,7 +442,7 @@ class DinnerFixtures extends Fixture
         $manager->flush();
     }
 
-    /** @param MealOccasion[] $occasions */
+    /** @param RecipeCategory[] $occasions */
     private function makeRecipe(
         string $name,
         string $description,
@@ -455,7 +455,7 @@ class DinnerFixtures extends Fixture
         $recipe->setName($name);
         $recipe->setDescription($description);
         $recipe->setCourse($course);
-        $recipe->setMealOccasions($occasions);
+        $recipe->setRecipeCategories($occasions);
         $recipe->setMastered($mastered);
         $recipe->setImage($image);
 
